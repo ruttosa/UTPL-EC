@@ -57,7 +57,7 @@
                         <input type="text" name="nombreEspecialidad" 
                             class="form-control form-control-lg <?php echo (!empty($data['nombreEspecialidad'])) ? 'is-invalid' : ''; ?>"
                             value="<?php echo $data['nombreEspecialidad']; ?>">
-                        <span class="invalid-feedback"><?php echo $data['nombreEspecialidad_error']; ?></span>
+                        <span class="invalid-feedback"><?php if(isset($data['nombreEspecialidad_error'])){echo $data['nombreEspecialidad_error'];} ?></span>
                     </div>
                 </div>
                 <div class="modal-footer">

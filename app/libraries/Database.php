@@ -36,6 +36,27 @@
             }
         }
 
+        // Create PDO instance
+        public function connect(){
+            try{
+                 // Set DSN;
+                $dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->dbname;
+                $options = array(
+                    PDO::ATTR_PERSISTENT => true, // increase performance by checking if ther is a connection establish with database
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION // Elegant way to handle errors
+                );
+                $this->dbh = new PDO($dsn, $this->user, $this->pass, $options);
+            }
+            catch(PDOException $e){
+                $this->error = $e->getMessage();
+                echo $this->error;
+            }
+        }
+
+        public function clear(){
+            unset($this->dbh);
+        }
+        
         // Prepare statement with query
         public function query($sql){
             $this->stmt = $this->dbh->prepare($sql);
@@ -65,6 +86,11 @@
         // Execute the prepared statement
         public function execute(){
             return $this->stmt->execute();
+        }
+
+        // Execute the prepared statement
+        public function lastInsertId(){
+            return $this->dbh->lastInsertId();
         }
 
         // Get result set as array of objects

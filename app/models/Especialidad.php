@@ -75,14 +75,27 @@
             }
         }
 
-        public function obtenerEspecialidadPorUsuario($userId){
-            $this->db->query('SELECT * 
-                                FROM especialidades
-                                WHERE id = :id');
-            $this->db->bind(':id', $userId);
+        public function obtenerEspecialidadesPorPerfilPersona($perfilPersonaId){
+            $this->db->query('SELECT e.*
+                                FROM especialidad e
+                                JOIN perfilespecialidad pe ON pe.especialidadId = e.idEspecialidad
+                                WHERE pe.perfilPersonaId = :perfilPersonaId');
+            $this->db->bind(':perfilPersonaId', $perfilPersonaId);
 
             $row = $this->db->resultSet();
 
             return $row;
+        }
+
+        public function eliminarEspecialidadesPorPerfilPersona($perfilPersonaId){
+            $this->db->query('DELETE FROM perfilespecialidad WHERE perfilPersonaId = :perfilPersonaId');
+            $this->db->bind(':perfilPersonaId', $perfilPersonaId);
+
+            if($this->db->execute()){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
     }

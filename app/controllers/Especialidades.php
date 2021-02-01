@@ -10,7 +10,6 @@
             if(!isLoggedIn()){
                 redirect('usuarios/login');
             }
-
             //check User Role -- Only ADMINISTRADOR allowed
             if(!checkLoggedUserRol("ADMINISTRADOR")){
                 redirect('dashboard');
@@ -27,6 +26,16 @@
         }
 
         public function agregar(){
+
+            //check User is loggedIn
+            if(!isLoggedIn()){
+                redirect('usuarios/login');
+            }
+            //check User Role -- Only ADMINISTRADOR allowed
+            if(!checkLoggedUserRol("ADMINISTRADOR")){
+                redirect('dashboard');
+            }
+
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 
                  // Sanitize POST array
@@ -65,6 +74,16 @@
         }
         
         public function eliminar(){
+
+            //check User is loggedIn
+            if(!isLoggedIn()){
+                redirect('usuarios/login');
+            }
+            //check User Role -- Only ADMINISTRADOR allowed
+            if(!checkLoggedUserRol("ADMINISTRADOR")){
+                redirect('dashboard');
+            }
+
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $data = [
                     'especialidadToDelete' => trim($_POST['especialidadToDelete'])
@@ -94,6 +113,16 @@
         }
 
         public function editar(){
+
+            //check User is loggedIn
+            if(!isLoggedIn()){
+                redirect('usuarios/login');
+            }
+            //check User Role -- Only ADMINISTRADOR allowed
+            if(!checkLoggedUserRol("ADMINISTRADOR")){
+                redirect('dashboard');
+            }
+            
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $data = [
                     'especialidadToEditId' => trim($_POST['especialidadToEditId']),

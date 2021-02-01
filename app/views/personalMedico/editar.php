@@ -1,16 +1,16 @@
 <?php require APPROOT . '/views/inc/header.php'; ?>
     
 <div class="container">
-    <h2>Añadir médico</h2>
+    <h2>Editar médico</h2>
     <p class="lead">Aquí podrás realizar el registro de un nuevo médico en el sistema</p>
     <div>
-        <?php flash('agregarMedico_error'); ?>       
-        <?php flash('agregarMedico_success'); ?>
+        <?php flash('editarMedico_error'); ?>       
+        <?php flash('editarMedico_success'); ?>
     </div>
     <div class="col-md-12">
         <div class="card p-3 shadow bg-info text-light">
             <div class="card-body">
-                <form action="<?php echo URLROOT; ?>/personalMedico/agregar" method="post">
+                <form action="<?php echo URLROOT; ?>/personalMedico/editar/<?php echo $data['id']; ?>" method="post">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -72,8 +72,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="correo">Correo electrónico: <sup>*</sup></label>
-                                <input type="email" name="correo" 
-                                    class="form-control form-control-lg <?php echo (!empty($data['correo_error'])) ? 'is-invalid' : ''; ?>"
+                                <input type="email" name="correo" readonly="true" 
+                                    class="form-control form-control-lg disabled <?php echo (!empty($data['correo_error'])) ? 'is-invalid' : ''; ?>"
                                     value="<?php echo $data['correo']; ?>">
                                 <span class="invalid-feedback"><?php echo $data['correo_error']; ?></span>
                             </div>
@@ -144,7 +144,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="horarioAtencion">Horario de atención: <sup>*</sup></label>
-                                <select name="horarioAtencion[]" multiple class="form-control form-control-lg <?php echo (!empty($data['horarioAtencion_error'])) ? 'is-invalid' : ''; ?>">
+                                <select name="horarioAtencion[]" readonly="true" multiple class="form-control form-control-lg <?php echo (!empty($data['horarioAtencion_error'])) ? 'is-invalid' : ''; ?>">
                                     <?php foreach($data['horariosDeAtencion'] as $horarioDeAtencion) : ?>
                                         <option value="<?php echo $horarioDeAtencion->idHorarioAtencion ?>" <?php if(in_array($horarioDeAtencion->idHorarioAtencion, $data['horarioAtencion'])){echo 'selected';} ?>><?php echo $horarioDeAtencion->nombreHorario . ' (' . $horarioDeAtencion->horaInicio . ' a ' . $horarioDeAtencion->horaFin . ')' ?></option>
                                     <?php endforeach; ?>
@@ -155,7 +155,7 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-4 mx-auto">
-                            <input type="submit" value="Añadir" class="btn btn-block btn-success">
+                            <input type="submit" value="Editar" class="btn btn-block btn-success">
                         </div>
                     </div>
                 </form>

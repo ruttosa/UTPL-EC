@@ -26,7 +26,7 @@
                             <input type="submit" value="Login" class="btn btn-success btn-block">
                         </div>
                         <div class="col">
-                            <a href="<?php echo URLROOT; ?>/usuarios/registro" class="btn btn-light">¿Aún no tiene una cuenta? Regístrese</a>
+                            <a href="<?php echo URLROOT; ?>/clientes/registro" class="btn btn-light">¿Aún no tiene una cuenta? Regístrese</a>
                         </div>
                     </div>
                 </form>

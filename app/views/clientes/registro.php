@@ -4,10 +4,10 @@
         <div class="col-md-6 mx-auto">
             <div class="card card-body bg-light mb-5 shadow">
                 <div class="text-center">
-                    <h2>Registro de usuario</h2>
+                    <h2>Registro de cliente</h2>
                     <p>Completa el formulario para registrarte en nuestra aplicación como cliente del hospital</p>
                 </div>
-                <form action="<?php echo URLROOT; ?>/usuarios/registro" method="post">
+                <form action="<?php echo URLROOT; ?>/clientes/registro" method="post">
                     <div class="form-group">
                         <label for="correo">Correo electrónico: <sup class="text-danger font-weight-bold">*</sup></label>
                         <input type="email" name="correo" 

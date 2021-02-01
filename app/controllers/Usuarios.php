@@ -30,7 +30,7 @@
                 }
                 else{
                     // Check correo existente
-                    if($this->userModel->ObtenerUsuarioPorCorreo($data['correo'])){
+                    if($this->userModel->validarUsuarioPorCorreo($data['correo'])){
                         $data['correo_error'] = 'El correo ya existe';
                     }
                     else{
@@ -61,7 +61,7 @@
                     $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
 
                     // Registrar Usuario
-                    if($this->userModel->crearUsuario($data)){
+                    if($this->userModel->crearUsuario($data) != null){
                         flash('register_success', 'El registro se ha completado exitosamente. Inicie sesión para continuar');
                         redirect('usuarios/login');
                     }
@@ -118,7 +118,7 @@
                 }
 
                 // Check for usuario/correo
-                if($this->userModel->ObtenerUsuarioPorCorreo($data['correo'])){
+                if($this->userModel->validarUsuarioPorCorreo($data['correo'])){
                     // User found
                 }
                 else{
@@ -135,10 +135,12 @@
                     if($loggedInUser){
 
                         // Obtener Roles de Usario
-                        $roles = $this->userModel->ObtenerRolesPorUsurioId($loggedInUser->idUsuario);
+                        $roles = $this->userModel->obtenerRolesPorUsuarioId($loggedInUser->idUsuario);
 
                         // Create User Session
-                        $this->crearSesionDeUsuario($loggedInUser, $roles);
+                        if($this->userModel->crearSesionDeUsuario($loggedInUser, $roles)){
+                            redirect('dashboard');
+                        }
                     }
                     else{
                         $data['password_error'] = 'Password incorrect';
@@ -173,15 +175,6 @@
             unset($_SESSION['user_roles']);
             session_destroy();
             redirect('usuarios/login');
-        }
-
-        private function crearSesionDeUsuario($user, $userRoles){
-            $_SESSION['user_id'] = $user->idUsuario;
-            $_SESSION['user_name'] = $user->nombreUsuario;
-            $_SESSION['user_correo'] = $user->correo;
-            $_SESSION['user_roles'] = $userRoles;
-            
-            redirect('dashboard');
         }
 
     }

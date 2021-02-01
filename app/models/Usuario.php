@@ -16,10 +16,10 @@
 
             // Execute
             if($this->db->execute()){
-                return true;
+                return $this->db->lastInsertId();
             }
             else{
-                return false;
+                return null;
             }
         }
 
@@ -40,8 +40,8 @@
             }
         }
 
-        // Obtener usuario por correo
-        public function ObtenerUsuarioPorCorreo($email){
+        // Validar usuario por correo
+        public function validarUsuarioPorCorreo($email){
             $this->db->query('SELECT * FROM usuario WHERE correo = :correo');
             $this->db->bind(':correo', $email);
 
@@ -56,8 +56,18 @@
             }
         }
 
+        // Obtener usuario por correo
+        public function obtenerUsuarioPorCorreo($email){
+            $this->db->query('SELECT * FROM usuario WHERE correo = :correo');
+            $this->db->bind(':correo', $email);
+
+            $row = $this->db->single();
+
+            return $row;
+        }
+
         // Obtener usuario por ID
-        public function ObtenerUsuarioPorId($id){
+        public function obtenerUsuarioPorId($id){
             $this->db->query('SELECT * FROM usuario WHERE idUsuario = :idUsuario');
             $this->db->bind(':idUsuario', $id);
 
@@ -67,7 +77,7 @@
         }
 
         // Obtener Rol por Usuario
-        public function ObtenerRolesPorUsurioId($userId){
+        public function obtenerRolesPorUsuarioId($userId){
 
             $this->db->query('SELECT r.idRol, r.nombreRol 
                                 FROM usuariorol ur 
@@ -78,5 +88,90 @@
             $rows = $this->db->resultSet();
 
             return $rows;
+        }
+
+        // Asignar Rol de Usuario
+        public function asignarUsuarioRol($userId, $nombreRol){
+            $this->db->query('SELECT idRol FROM rol WHERE nombreRol = :nombreRol');
+            $this->db->bind(':nombreRol', $nombreRol);
+
+            $rol = $this->db->single();
+
+            $this->db->query('INSERT INTO usuariorol (usuarioId, rolId) VALUES (:usuarioId, :rolId)');
+            $this->db->bind(':usuarioId', $userId);
+            $this->db->bind(':rolId', $rol->idRol);
+
+            if($this->db->execute()){
+                return true;
+            }
+            else{
+                return false;
+            }
+
+        }
+
+        // Quitar Rol de Usuario
+        public function quitarUsuarioRol($userId, $rolId){
+            $this->db->query('DELETE from usuariorol WHERE usuarioId = :userId AND rolId = :rolId');
+            $this->db->bind(':userId', $userId);
+            $this->db->bind(':rolId', $rolId);
+
+            if($this->db->execute()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+
+        // Actualizar Perfil de Usuario del Usuario
+        public function actualizarUsuarioPerfil($userId, $perfilPersonaId){
+            $this->db->query('UPDATE usuario SET perfilPersonaId = :perfilPersonaId WHERE idUsuario = :usuarioId');
+            $this->db->bind(':perfilPersonaId', $perfilPersonaId);
+            $this->db->bind(':usuarioId', $userId);
+
+            // Execute
+            if($this->db->execute()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+
+        // Eliminar Usuario
+        public function eliminarUsuario($userId){
+            $this->db->query('DELETE from usuario WHERE idUsuario = :userId');
+            $this->db->bind(':userId', $userId);
+
+            if($this->db->execute()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+
+        public function crearSesionDeUsuario($user, $userRoles){
+            $_SESSION['user_id'] = $user->idUsuario;
+            $_SESSION['user_name'] = $user->nombreUsuario;
+            $_SESSION['user_correo'] = $user->correo;
+            $_SESSION['user_roles'] = $userRoles;
+
+            $_SESSION["cliente_sin_perfil"] = !$this->verificarUsuarioPerfilAsignado($user->correo);
+            
+            return true;
+        }
+         
+        public function verificarUsuarioPerfilAsignado($usuarioCorreo){
+
+            $usuario = $this->obtenerUsuarioPorCorreo($usuarioCorreo);
+
+            if(isset($usuario)){
+                if($usuario->perfilPersonaId != null){
+                    return true;
+                }
+            }
+            return false;
         }
     }

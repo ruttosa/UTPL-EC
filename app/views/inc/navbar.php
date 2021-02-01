@@ -18,7 +18,7 @@
         <?php if(isset($_SESSION['user_id'])) : ?>
         <?php else : ?>
           <li class="nav-item">
-            <a class="nav-link text-white top-link" aria-current="page" href="<?php echo URLROOT; ?>/usuarios/registro">Registrarse</a>
+            <a class="nav-link text-white top-link" aria-current="page" href="<?php echo URLROOT; ?>/clientes/registro">Registrarse</a>
           </li>
           <li class="nav-item"></div>
             <a class="nav-link text-white top-link" href="<?php echo URLROOT; ?>/usuarios/login">Iniciar sesión</a>
@@ -42,10 +42,12 @@
 
             <!-- sidebar -->
             <div class="col-xl-2 col-lg-3 col-md-4 bg-info sidebar fixed-top scrollable">
-              <a href="#" class="navbar-brand text-white d-block mx-auto text-center text-wrap py-2 bottom-border">Hospital Nuestra Señora</a>
-              <div class="bottom-border py-2 my-2 d-flex flex-column text-center">
-                <img src="<?php echo URLROOT; ?>/public/img/admin.jpeg" width="90" class="rounded m-auto" >
-                <a href="#" class="text-white text-wrap mt-1"><?php echo $_SESSION['user_name'] ?></a>
+              <a href="#" class="navbar-brand text-white d-block mx-auto text-center text-wrap p-2 bottom-border">Bienvenido</a>
+              <div class="bottom-border py-2 my-2">
+                <a href="<?php echo URLROOT . "/clientes/perfil/" . $_SESSION['user_id'] ?>" class="text-white text-decoration-none text-wrap mt-1 d-flex flex-column justify-content-center align-items-center">
+                  <img src="<?php echo URLROOT; ?>/public/img/logo_centro_medico.jpg" width="90" class="rounded m-auto" >
+                  <div class="mt-1 text-capitalize"><?php echo $_SESSION['user_name'] ?></div>
+                </a>
               </div>
               <ul class="navbar-nav flex-column mt-4">
               <?php if(isset($_SESSION['user_roles'])) : ?>
@@ -61,41 +63,41 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="<?php echo URLROOT; ?>/personalMedico/index" class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link <?php if(startsWith($_SESSION['activePage'],'personalMedico')){echo 'current';}?>">
+                    <a href="<?php echo URLROOT; ?>/personalMedico" class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link <?php if(startsWith($_SESSION['activePage'],'personalMedico')){echo 'current';}?>">
                       <i class="fas fa-user-md text-light fa-lg ml-2 mr-3"></i>Personal Médico
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="<?php echo URLROOT; ?>/clientes/index" class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link">
+                    <a href="<?php echo URLROOT; ?>/clientes" class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link <?php if(startsWith($_SESSION['activePage'],'clientes')){echo 'current';}?>">
                       <i class="fas fa-user-md text-light fa-lg ml-2 mr-3"></i>Clientes
                     </a>
                   </li>
                 <?php endif; ?>
                 <?php if(checkLoggedUserRol('CLIENTE')) : ?>
                   <li class="nav-item">
-                    <a href="<?php echo URLROOT; ?>/especialidades/index" class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link">
+                    <a <?php if($_SESSION['cliente_sin_perfil']){echo 'onclick="javascript void(0);"';}else{ echo 'href="' . URLROOT . '/pacientes"';}?> class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link <?php if(startsWith($_SESSION['activePage'],'pacientes')){echo 'current';}?> <?php if($_SESSION['cliente_sin_perfil']){echo 'disabled-link';} ?> <?php if(startsWith($_SESSION['activePage'],'pacientes')){echo 'current';}?>" >
                       <i class="fas fa-hospital-user text-light fa-lg ml-2 mr-3"></i>Pacientes
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="<?php echo URLROOT; ?>/especialidades/index" class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link">
+                    <a <?php if($_SESSION['cliente_sin_perfil']){echo 'onclick="javascript void(0);"';}else{ echo 'href="' . URLROOT . '/consultas/agendar"';}?> class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link <?php if($_SESSION['cliente_sin_perfil']){echo 'disabled-link';} ?> <?php if(startsWith($_SESSION['activePage'],'consultas')){echo 'current';}?>" >
                       <i class="fas fa-calendar-plus text-light fa-lg ml-2 mr-3"></i>Agendar cita médica
                     </a>
                   </li>                  
                 <?php endif; ?>
                 <?php if(checkLoggedUserRol('MEDICO') || checkLoggedUserRol('CLIENTE')) : ?>
                   <li class="nav-item">
-                    <a href="<?php echo URLROOT; ?>/especialidades/index" class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link">
+                    <a <?php if($_SESSION['cliente_sin_perfil']){echo 'onclick="javascript void(0);"';}else{ echo 'href="' . URLROOT . '/historiasMedicas"';}?> class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link <?php if(startsWith($_SESSION['activePage'],'historiasMedicas')){echo 'current';}?> <?php if($_SESSION['cliente_sin_perfil']){echo 'disabled-link';} ?>" >
                       <i class="fas fa-notes-medical text-light fa-lg ml-2 mr-3"></i>Historias Médicas
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="<?php echo URLROOT; ?>/recetas/index" class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link">
+                    <a <?php if($_SESSION['cliente_sin_perfil']){echo 'onclick="javascript void(0);"';}else{ echo 'href="' . URLROOT . '/recetas"';}?> class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link <?php if(startsWith($_SESSION['activePage'],'recetas')){echo 'current';}?> <?php if($_SESSION['cliente_sin_perfil']){echo 'disabled-link';} ?>" >
                       <i class="fas fa-capsules text-light fa-lg ml-2 mr-3"></i>Recetas
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="<?php echo URLROOT; ?>/examenes/index" class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link">
+                  <a <?php if($_SESSION['cliente_sin_perfil']){echo 'onclick="javascript void(0);"';}else{ echo 'href="' . URLROOT . '/examenes"';}?> class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link <?php if(startsWith($_SESSION['activePage'],'examenes')){echo 'current';}?> <?php if($_SESSION['cliente_sin_perfil']){echo 'disabled-link';} ?>" >
                       <i class="fas fa-file-medical-alt text-light fa-lg ml-2 mr-3"></i>Exámenes
                     </a>
                   </li>
@@ -109,7 +111,18 @@
             <div class="col-xl-10 col-lg-9 col-md-8 ml-auto bg-dark fixed-top top-navbar">
               <div class="row align-items-center">
                 <div class="col-md-4">
-                  <h6 class="text-light mb-0">Breadcumb</h6>
+                  <h6 class="text-light mb-0">
+                    <?php 
+                      $relativeUrl = '';
+                      $counter = 0;
+                      foreach($_SESSION['currentUrl'] as $urlPortion){
+                        $relativeUrl = $relativeUrl . $urlPortion . '/';
+                        if($counter == count($_SESSION['currentUrl']) - 1){ $connector = '';}else{ $connector = '<span class="mx-2">></span>';}
+                        echo '<a class="text-decoration-none text-capitalize text-info" href="' . URLROOT . '/' . $relativeUrl . '" >' . $urlPortion . '</a>' . $connector;
+                        $counter++;
+                      }
+                      ?>
+                  </h6>
                 </div>
                 <div class="col-md-5">
                   <!-- <form> //Searh Control - Not used

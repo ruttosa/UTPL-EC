@@ -83,6 +83,26 @@ body{
     background-color: #f44336;
     border-radius: 50%;
 }
+.disabled-link{
+    cursor: not-allowed;
+    color:#b9b9b9 !important;
+    
+}
+.disabled-link:hover{
+    background-color: transparent !important;
+    box-shadow: none !important;
+    transform: none;
+}
+.disabled-input{
+    background: #edf8fb !important; /* #ccc */
+    color: #9b9b9b !important;
+    cursor: default;
+    border: none;
+}
+.disabled-input:focus{
+    box-shadow: none;
+    border:none;
+}
 
 @media(max-width:768px){
     .sidebar{

@@ -1,8 +1,12 @@
 <?php
-    class Dashboard extends Controller{
+    class Recetas extends Controller{
+
         public function __construct(){
+            $this->especialidadModel = $this->model('Especialidad');
+            $this->pacienteModel = $this->model('Paciente');
             $this->citaMedicaModel = $this->model('CitaMedica');
-            $this->pacienteModel = $this->model('Paciente');;
+            $this->examenModel = $this->model('Examen');
+            $this->recetaModel = $this->model('RecetaMedica');
         }
 
         public function index(){
@@ -62,35 +66,7 @@
                 /* $data['citasMedicas'] = $this->citaMedicaModel->obtenerCitasMedicasPorPaciente(); */
             }
              
-            $this->view('dashboards/' . $vista, $data);
+            $this->view('recetas/' . $vista, $data);
         }
-
-        public function cancelar($citaMedicaId){
-            
-            if($this->citaMedicaModel->cancelarCitaMedica($citaMedicaId)){
-                flash('cancelarCita_success', 'La cita médica ha sido cancelada con éxito');
-                redirect('dashboards/index');
-            }
-
-        }
-
-        public function cliente(){
-
-            if(!isLoggedIn()){
-                redirect('usuarios/login');
-            }
-
-            $data = [
-                'dashboard_type' => '',
-                'citasMedicas' => []
-            ];
-
-            //check User Role -- Only MEDICO allowed
-            if(checkLoggedUserRol("CLIENTE")){
-
-
-
-            }
-        }
-
+        
     }
