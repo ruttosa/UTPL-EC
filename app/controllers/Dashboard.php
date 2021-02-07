@@ -49,15 +49,18 @@
 
                 // Obtener pacientes
                 $pacientes = $this->pacienteModel->obtenerPacientesPorCliente($_SESSION['user_id']);
-                foreach ($pacientes as $paciente) {
-                    // Obtener citas medicas por paciente
-                    $citasMedicas = $this->citaMedicaModel->obtenerCitasMedicasPorPaciente($paciente->idPaciente);
-                    foreach($citasMedicas as $citaMedica){
-                        // Cargar registros para la vista                        
-                        array_push($data['citasMedicas'], $citaMedica);
-                    }                   
+                if(isset($pacientes)){
+                    foreach ($pacientes as $paciente) {
+                        // Obtener citas medicas por paciente
+                        $citasMedicas = $this->citaMedicaModel->obtenerCitasMedicasPorPaciente($paciente->idPaciente);
+                        if(isset($citasMedicas)){
+                            foreach($citasMedicas as $citaMedica){
+                                // Cargar registros para la vista                        
+                                array_push($data['citasMedicas'], $citaMedica);
+                            }
+                        }                
+                    }
                 }
-
                 //$data['citasMedicas'] = $this->citaMedicaModel->obtenerCitasMedicasPorPaciente();
                 /* $data['citasMedicas'] = $this->citaMedicaModel->obtenerCitasMedicasPorPaciente(); */
             }

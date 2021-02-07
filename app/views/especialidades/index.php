@@ -4,6 +4,7 @@
     <h2>Gestión de especialidades</h2>
     <p class="lead">Aquí podrás realizar la gestión del catálogo de especialidades disponibles en el hospital</p>
     <div>
+        <?php flash('main_error'); ?>
         <?php flash('especialidad_error'); ?>
         <?php flash('especialidad_success'); ?>                
     </div>

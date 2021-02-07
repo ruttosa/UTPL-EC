@@ -2,10 +2,7 @@
     class Recetas extends Controller{
 
         public function __construct(){
-            $this->especialidadModel = $this->model('Especialidad');
             $this->pacienteModel = $this->model('Paciente');
-            $this->citaMedicaModel = $this->model('CitaMedica');
-            $this->examenModel = $this->model('Examen');
             $this->recetaModel = $this->model('RecetaMedica');
         }
 
@@ -17,7 +14,7 @@
 
             $data = [
                 'dashboard_type' => '',
-                'citasMedicas' => [], 
+                'recetas' => [], 
                 'sinCitas_error' => ''
             ];
             $vista = 'index';
@@ -26,19 +23,19 @@
             if(checkLoggedUserRol("ADMINISTRADOR")){
                 $vista = "administrador";
                 $data['dashboard_type'] = 'ADMINISTRADOR';
-                $data['citasMedicas'] = $this->citaMedicaModel->obtenerCitasMedicas();
+                $data['recetas'] = $this->recetaModel->obtenerRecetas();
             }
 
             //check User Role -- Only MEDICO allowed
             if(checkLoggedUserRol("MEDICO")){
                 $vista = "medico";
-                $citasMedicas = $this->citaMedicaModel->obtenerCitasMedicasPorMedico($_SESSION['user_id']);
+                $recetas = $this->recetaModel->obtenerRecetasPorMedico($_SESSION['user_id']);
 
-                if(count($citasMedicas) > 0){
-                    $data['citasMedicas'] = $this->citaMedicaModel->obtenerCitasMedicasPorMedico($_SESSION['user_id']);
+                if(isset($recetas)){
+                    $data['recetas'] = $this->recetaModel->obtenerRecetasPorMedico($_SESSION['user_id']);
                 }
                 else{
-                    $data['sinCitas_error'] = "Actualmente no tiene ninguna cita pendiente";
+                    $data['sinRecetas_error'] = "Actualmente no tiene ninguna cita pendiente";
                 }
             }
 
@@ -55,15 +52,17 @@
                 $pacientes = $this->pacienteModel->obtenerPacientesPorCliente($_SESSION['user_id']);
                 foreach ($pacientes as $paciente) {
                     // Obtener citas medicas por paciente
-                    $citasMedicas = $this->citaMedicaModel->obtenerCitasMedicasPorPaciente($paciente->idPaciente);
-                    foreach($citasMedicas as $citaMedica){
-                        // Cargar registros para la vista                        
-                        array_push($data['citasMedicas'], $citaMedica);
-                    }                   
+                    $recetas = $this->recetaModel->obtenerRecetasPorPaciente($paciente->idPaciente);
+                    if(isset($recetas)){
+                        foreach($recetas as $receta){
+                            // Cargar registros para la vista                        
+                            array_push($data['recetas'], $receta);
+                        }
+                    }                  
                 }
 
-                //$data['citasMedicas'] = $this->citaMedicaModel->obtenerCitasMedicasPorPaciente();
-                /* $data['citasMedicas'] = $this->citaMedicaModel->obtenerCitasMedicasPorPaciente(); */
+                //$data['recetas'] = $this->recetaModel->obtenerRecetasPorPaciente();
+                /* $data['recetas'] = $this->recetaModel->obtenerRecetasPorPaciente(); */
             }
              
             $this->view('recetas/' . $vista, $data);

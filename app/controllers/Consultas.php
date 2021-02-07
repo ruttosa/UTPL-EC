@@ -7,17 +7,24 @@
             $this->citaMedicaModel = $this->model('CitaMedica');
             $this->examenModel = $this->model('Examen');
             $this->recetaModel = $this->model('RecetaMedica');
+            $this->clienteModel = $this->model('Cliente');
         }
 
         public function agendar(){
 
-            //check User is loggedIn
+            // Check User is loggedIn
             if(!isLoggedIn()){
                 redirect('usuarios/login');
             }
-            //check User Role -- Only CLIENTE allowed
-            if(!checkLoggedUserRol("CLIENTE")){
+            // Check User Role -- Only CLIENTE y ADMINISTRADOR allowed
+            if(checkLoggedUserRol("MEDICO")){
                 redirect('dashboard');
+            }
+
+            // Check Administrador for extra data
+            $isAdmin = false;
+            if(checkLoggedUserRol("ADMINISTRADOR")){
+                $isAdmin = true;
             }
 
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -26,6 +33,7 @@
                 $pacientes =  $this->pacienteModel->obtenerPacientesPorCliente($_SESSION['user_id']);
 
                 $data = [
+                    'isAdmin'=> false,
                     'especialidades' => $especialidades,
                     'especialidad' => trim($_POST['especialidad']),
                     'especialidad_error' => '',
@@ -35,12 +43,22 @@
                     'doctor_error' => '',
                     'horarioAtencion' => trim($_POST['horarioSelected']),
                     'horarioAtencion_error' => '',
+                    'clientes' => [],
                     'pacientes' => $pacientes,
                     'paciente' => trim($_POST['paciente']),
                     'paciente_error' => '',
                     'motivoConsulta' => trim($_POST['motivoConsulta']),
                     'motivoConsulta_error' => ''
                 ];
+                if($isAdmin){
+                    // Load extra data for administrador user
+                    $data['isAdmin'] = true;
+                    $clientes = $this->clienteModel->obtenerClientes();
+                    if(isset($cliente)){
+                        $data['clientes'] = $clientes;
+                    }
+                }
+
                 if($data['especialidad'] != null && $data['fechaCitaMedica'] != null){
                     $data['medicosDisponibles'] = $this->citaMedicaModel->obtenerMedicosDisponibles($data['especialidad'], $data['fechaCitaMedica']); 
                 }
@@ -70,15 +88,17 @@
             }
             else{
                 $especialidades = $this->especialidadModel->obtenerEspecialidades();
-                $pacientes =  $this->pacienteModel->obtenerPacientesPorCliente($_SESSION['user_id']);
 
                 $data = [
+                    'isAdmin' => false,
                     'especialidades' => $especialidades,
-                    'especialidad' => "",
-                    'especialidad_error' => "",
-                    'pacientes' => $pacientes,
+                    'especialidad' => '',
+                    'especialidad_error' => '',
+                    'clientes' => [],
+                    'cliente' => '',
+                    'pacientes' => [],
                     'paciente' => '',
-                    'paciente_error',
+                    'paciente_error' => '',
                     'motivoConsulta' => '',
                     'motivoConsulta_error' => '',
                     'medicosDisponibles' => '',
@@ -90,6 +110,18 @@
                     'fechaCitaMedica_error' => ''
                 ];
 
+                if($isAdmin){
+                    // Load extra data for administrador user
+                    $data['isAdmin'] = true;
+                    $clientes = $this->clienteModel->obtenerClientes();
+                    if(isset($clientes)){
+                        $data['clientes'] = $clientes;
+                    }
+                }
+                else{
+                    $data['pacientes'] = $this->pacienteModel->obtenerPacientesPorCliente($_SESSION['user_id']);
+                }
+
                 return $this->view('consultas/agendar', $data);
             }
         }
@@ -99,8 +131,8 @@
             if(!isLoggedIn()){
                 redirect('usuarios/login');
             }
-            //check User Role -- Only CLIENTE allowed
-            if(!checkLoggedUserRol("CLIENTE")){
+            //check User Role -- Only CLIENTE y ADMINISTRADOR allowed
+            if(checkLoggedUserRol("MEDICO")){
                 redirect('dashboard');
             }
 

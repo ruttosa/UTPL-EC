@@ -69,7 +69,7 @@
                   </li>
                   <li class="nav-item">
                     <a href="<?php echo URLROOT; ?>/clientes" class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link <?php if(startsWith($_SESSION['activePage'],'clientes')){echo 'current';}?>">
-                      <i class="fas fa-user-md text-light fa-lg ml-2 mr-3"></i>Clientes
+                      <i class="fas fa-hospital-user text-light fa-lg ml-2 mr-3"></i>Clientes
                     </a>
                   </li>
                 <?php endif; ?>
@@ -134,9 +134,9 @@
                 </div>
                 <div class="col-md-3">
                   <ul class="navbar-nav">
-                    <li class="nav-item icon-parent"><a href="" class="nav-link icon-bullet"><i class="fas fa-comments text-muted fa-lg"></i></a></li>
-                    <li class="nav-item icon-parent"><a href="" class="nav-link icon-bullet"><i class="fas fa-bell text-muted fa-lg"></i></a></li>
-                    <li class="nav-item ml-md-auto">
+                    <!-- <li class="nav-item icon-parent"><a href="" class="nav-link icon-bullet"><i class="fas fa-comments text-muted fa-lg"></i></a></li> -->
+                    <li class="nav-item icon-parent ml-auto"><a href="" class="nav-link icon-bullet"><i class="fas fa-bell text-muted fa-lg"></i></a></li>
+                    <li class="nav-item ml-md-0">
                       <a href="<?php echo URLROOT; ?>/usuarios/logout" class="nav-link d-flex align-items-center">
                         <div class="mr-2">Cerrar Sesión</div>
                         <i class="fas fa-sign-out-alt text-info fa-lg"></i>

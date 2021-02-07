@@ -6,13 +6,17 @@
             $this->db = new Database;
         }
 
-        // Registrar usuario
+        // Registrar usuario - LastId
         public function crearUsuario($data){
+
+            // Hash Password
+            $passwordHashed = password_hash($data['password'], PASSWORD_DEFAULT);
+
             $this->db->query('INSERT INTO usuario (nombreUsuario, correo, password) VALUES (:nombreUsuario, :correo, :password)');
             // Bind values
             $this->db->bind(':nombreUsuario', $data['nombreUsuario']);
             $this->db->bind(':correo', $data['correo']);
-            $this->db->bind(':password', $data['password']);
+            $this->db->bind(':password', $passwordHashed);
 
             // Execute
             if($this->db->execute()){
@@ -23,7 +27,7 @@
             }
         }
 
-        // Verificar Usario y Contraseña
+        // Ingreso de Usario y Contraseña - Object
         public function login($email, $password){
             $this->db->query('SELECT * FROM usuario where correo = :correo');
             $this->db-> bind(':correo', $email);
@@ -40,7 +44,7 @@
             }
         }
 
-        // Validar usuario por correo
+        // Validar usuario por Correo - Boolean
         public function validarUsuarioPorCorreo($email){
             $this->db->query('SELECT * FROM usuario WHERE correo = :correo');
             $this->db->bind(':correo', $email);
@@ -56,7 +60,7 @@
             }
         }
 
-        // Obtener usuario por correo
+        // Obtener usuario por Correo - Object
         public function obtenerUsuarioPorCorreo($email){
             $this->db->query('SELECT * FROM usuario WHERE correo = :correo');
             $this->db->bind(':correo', $email);
@@ -66,7 +70,7 @@
             return $row;
         }
 
-        // Obtener usuario por ID
+        // Obtener usuario por ID - Object
         public function obtenerUsuarioPorId($id){
             $this->db->query('SELECT * FROM usuario WHERE idUsuario = :idUsuario');
             $this->db->bind(':idUsuario', $id);
@@ -76,7 +80,7 @@
             return $row;
         }
 
-        // Obtener Rol por Usuario
+        // Obtener Roles por Usuario - Objects Set
         public function obtenerRolesPorUsuarioId($userId){
 
             $this->db->query('SELECT r.idRol, r.nombreRol 
@@ -90,7 +94,7 @@
             return $rows;
         }
 
-        // Asignar Rol de Usuario
+        // Asignar Rol de Usuario - Boolean
         public function asignarUsuarioRol($userId, $nombreRol){
             $this->db->query('SELECT idRol FROM rol WHERE nombreRol = :nombreRol');
             $this->db->bind(':nombreRol', $nombreRol);
@@ -110,7 +114,7 @@
 
         }
 
-        // Quitar Rol de Usuario
+        // Quitar Rol de Usuario - Boolean
         public function quitarUsuarioRol($userId, $rolId){
             $this->db->query('DELETE from usuariorol WHERE usuarioId = :userId AND rolId = :rolId');
             $this->db->bind(':userId', $userId);
@@ -124,7 +128,7 @@
             }
         }
 
-        // Actualizar Perfil de Usuario del Usuario
+        // Actualizar Perfil de Usuario del Usuario - Boolean
         public function actualizarUsuarioPerfil($userId, $perfilPersonaId){
             $this->db->query('UPDATE usuario SET perfilPersonaId = :perfilPersonaId WHERE idUsuario = :usuarioId');
             $this->db->bind(':perfilPersonaId', $perfilPersonaId);
@@ -139,7 +143,7 @@
             }
         }
 
-        // Eliminar Usuario
+        // Eliminar Usuario - Boolean
         public function eliminarUsuario($userId){
             $this->db->query('DELETE from usuario WHERE idUsuario = :userId');
             $this->db->bind(':userId', $userId);
@@ -152,6 +156,7 @@
             }
         }
 
+        // Cargar datos de sesión de usuario - Boolean
         public function crearSesionDeUsuario($user, $userRoles){
             $_SESSION['user_id'] = $user->idUsuario;
             $_SESSION['user_name'] = $user->nombreUsuario;
@@ -162,7 +167,8 @@
             
             return true;
         }
-         
+        
+        // Verificación de perfil asignado a usuario - Boolean
         public function verificarUsuarioPerfilAsignado($usuarioCorreo){
 
             $usuario = $this->obtenerUsuarioPorCorreo($usuarioCorreo);
@@ -173,5 +179,23 @@
                 }
             }
             return false;
+        }
+
+        // resetear contraseña de usuario - Boolean
+        public function modificarPassword($usuarioId, $nuevoPassword){
+            
+            // Hash Password
+            $passwordHashed = password_hash($nuevoPassword, PASSWORD_DEFAULT);
+            $this->db->query("UPDATE usuario SET password = :nuevoPassword WHERE idUsuario = :usuarioId" );
+            $this->db->bind(":nuevoPassword", $passwordHashed);
+            $this->db->bind(":usuarioId", $usuarioId);
+           
+            // Execute
+            if($this->db->execute()){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
     }

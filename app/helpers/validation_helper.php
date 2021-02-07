@@ -33,9 +33,9 @@
         }
 
         // Validar Correo obligatorio
-        /* if(empty($data['correo'])){
+        if(empty($data['correo'])){
             $data['correo_error'] = 'Por favor ingrese el correo';
-        } */
+        }
 
         // Validar Direccion obligatorio
         if(empty($data['direccion'])){

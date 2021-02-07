@@ -57,9 +57,6 @@
                 // Asegurarse que no existan errores para proceder con el registro del usuario
                 if(empty($data['correo_error']) && empty($data['name_error']) && empty($data['password_error']) && empty($data['confirm_password_error'])){
 
-                    // Hash Password
-                    $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-
                     // Registrar Usuario
                     if($this->userModel->crearUsuario($data) != null){
                         flash('register_success', 'El registro se ha completado exitosamente. Inicie sesión para continuar');
@@ -177,4 +174,38 @@
             redirect('usuarios/login');
         }
 
+        public function passwordReset($usuarioId){
+
+            //check User is loggedIn
+            if(!isLoggedIn()){
+                redirect('usuarios/login');
+            }
+            //check User Role -- Only ADMINISTRADOR allowed
+            if(!checkLoggedUserRol("ADMINISTRADOR")){
+                redirect('dashboard');
+            }
+
+            $data = [
+                "estado" => "",
+                "resultado" => ""
+            ];
+
+            if(is_numeric($usuarioId)){
+                $password = randomString(8);
+                $passwordModificado = $this->userModel->modificarPassword($usuarioId, $password);
+                if($passwordModificado){
+                    $data['estado'] = "OK";
+                    $data['resultado'] = $password;
+                }
+                else{
+                    $data['estado'] = "ERROR";
+                    $data['resultado'] = "Ocurrió un error inesperado. La contraseña no ha sido modificada.";
+                }
+            }
+            else{
+                $data['estado'] = "ERROR";
+                $data['resultado']  = "Identificador de usuario no válido";
+            }
+            echo json_encode($data);
+        }
     }

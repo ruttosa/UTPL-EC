@@ -3,7 +3,8 @@
 <div class="container">
     <h2>Agendar Cita Médica</h2>
     <pc class="lead">Completa el formulario para realizar el agendamiento de una cita médica</p>
-    <div> 
+    <div>
+        <?php flash('main_error'); ?>
         <?php flash('registroConsulta_success'); ?>
         <?php flash('registroConsulta_error'); ?>
     </div>
@@ -59,9 +60,20 @@
                     <hr class="hr-filter">
                     <div class="row">
                         <div class="col-md-6">
+                            <?php if($data['isAdmin']) : ?>
+                                <div class="form-group">
+                                    <label for="cliente">Cliente: </label>
+                                    <select name="cliente" class="form-control form-control-lg" onchange="obtenerPacientes(this)">
+                                        <option value=""></option>
+                                        <?php foreach($data['clientes'] as $cliente) : ?>
+                                            <option value="<?php echo $cliente->idUsuario ?>" <?php if($data['cliente'] == $cliente->idUsuario){echo 'selected';} ?>><?php echo $cliente->nombreCompleto . " " . $cliente->apellidoCompleto ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            <?php endif; ?>
                             <div class="form-group">
                                 <label for="paciente">Paciente: <sup>*</sup></label>
-                                <select name="paciente" class="form-control form-control-lg <?php echo (!empty($data['paciente_error'])) ? 'is-invalid' : ''; ?>">
+                                <select id="paciente" name="paciente" class="form-control form-control-lg <?php echo (!empty($data['paciente_error'])) ? 'is-invalid' : ''; ?>">
                                     <option value=""></option>
                                     <?php foreach($data['pacientes'] as $paciente) : ?>
                                         <option value="<?php echo $paciente->idPaciente ?>" <?php if($data['paciente'] == $paciente->idPaciente){echo 'selected';} ?>><?php echo $paciente->nombreCompleto . " " . $paciente->apellidoCompleto ?></option>
@@ -160,6 +172,26 @@
                 "</tr>";
         });
         $("#tableResult").html(tableResultHtml);
+    }
+
+    function obtenerPacientes(clienteInput){
+        var clienteId = clienteInput.value;
+        if(clienteId != ''){
+
+            $.post("<?php echo URLROOT . "/pacientes/obtenerPacientesPorClienteId/" ?>" + clienteId )
+                .done(function (result){
+                    var pacientes = $.parseJSON(result);
+                    loadDropdownPacientes(pacientes);
+                });
+       }
+    }
+
+    function loadDropdownPacientes(pacientes){
+        var pacientesInput = $("#paciente");
+        pacientesInput.html("<option value=\"\"></option>");
+        pacientes.forEach(paciente => {
+            pacientesInput.append("<option value=\"" + paciente.idPaciente + "\">" + paciente.nombreCompleto + " " + paciente.apellidoCompleto + "</option>");
+        });
     }
 </script>
 <style>

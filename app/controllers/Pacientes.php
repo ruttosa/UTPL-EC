@@ -218,4 +218,23 @@
                 return $this->view('pacientes/editar', $data);              
             }
         }
+
+        public function obtenerPacientesPorClienteId($clienteId){
+
+            //check User is loggedIn
+            if(!isLoggedIn()){
+                redirect('usuarios/login');
+            }
+            //check User Role -- Only ADMINISTRADOR allowed
+            if(!checkLoggedUserRol("ADMINISTRADOR")){
+                redirect('dashboard');
+            }
+
+            if(isset($clienteId)){
+                $pacientes = $this->pacienteModel->obtenerPacientesPorCliente($clienteId);
+                if(isset($pacientes)){
+                    echo json_encode($pacientes);
+                }
+            }
+        }
     }

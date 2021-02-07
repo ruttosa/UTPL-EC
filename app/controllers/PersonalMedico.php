@@ -146,7 +146,7 @@
                         return $this->view('personalMedico/agregar', $data);
                     }
                     
-                    flash('agregarMedico_success', 'El registro del médico finalizó correctamente.');                    
+                    flash('agregarMedico_success', 'El registro del médico finalizó correctamente. Su contraseña actual es: ' . $generic_Password);                    
                     redirect('personalMedico/agregar');
                 }
                 else{
@@ -319,6 +319,8 @@
             if(!checkLoggedUserRol("ADMINISTRADOR")){
                 redirect('dashboard');
             }
+
+            // Verificar si el médico tiene citas asignadas
             
             // Obtener perfil de usuario
             $perfilUsuario = $this->perfilPersonaModel->obtenerPerfilPersonaPorUsuarioId($id);
@@ -326,7 +328,7 @@
             // Eliminar horarios de atencion del usuario
             $this->horarioAtencionModel->eliminarHorariosDeAtencionPorPerfilPersona($perfilUsuario->idPerfilPersona);
 
-            // Eliminar especialidades
+            // Eliminar especialidades asignadas al doctor
             $this->especialidadModel->eliminarEspecialidadesPorPerfilPersona($perfilUsuario->idPerfilPersona);
 
             // Obtener Roles del usuario
@@ -338,12 +340,13 @@
                     if($this->userModel->quitarUsuarioRol($id,$rolUsuario->idRol));
                 }
             }
-             // Obtener Roles del usuario
+             // Obtener Roles del usuario actualizados
              $rolesUsuario = $this->userModel->obtenerRolesPorUsuarioId($id);
 
              // Si no posee ningún rol de usuario, se procede con la eliminación del usuario y del perfil
              if(count($rolesUsuario) < 1){
-                
+
+                                
                 // Quitar asignación de perfil del usuario
                 $this->userModel->actualizarUsuarioPerfil($id, NULL);
 

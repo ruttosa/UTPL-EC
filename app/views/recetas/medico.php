@@ -13,26 +13,25 @@
                         <p class="m-0 pt-2">Aquí puedes visualizar todas las recetas enviadas a tus pacientes.</p>
                     </div>
                     <div class="card-body">
-                        <table class="table table-striped bg-light text-center">
+                    <table class="table table-striped bg-light text-center">
                         <thead>
                             <tr class="text-muted">
-                                <th>#</th>
                                 <th>Fecha</th>
-                                <th>Especialidad</th>
+                                <th>Receta</th>
                                 <th>Paciente</th>
-                                <th>Motivo</th>
-                                <th>Diagnóstico</th>
+                                <th># Cita</th>
+                                <th>Especialidad</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach($data['citasMedicas'] as $citaMedica) : ?>
+                            <?php foreach($data['recetas'] as $receta) : ?>
                                 <tr>
-                                    <td><?php echo $citaMedica->idCitaMedica ?></td>
-                                    <td><?php echo $citaMedica->fechaSolicitud ?></td>
-                                    <td><?php echo $citaMedica->especialidad ?></td>
-                                    <td><?php echo $citaMedica->medicoNombre . ' ' . $citaMedica->medicoApellido ?></td>
-                                    <td><?php echo $citaMedica->motivo ?></td>
-                                    <td><a class="btn btn-transparent btn-sm" href="<?php echo URLROOT; ?>/consultas/historiaMedica/<?php echo $citaMedica->idCitaMedica ?>"><i class="fas fa-notes-medical fa-2x text-info"></i></a></td>
+                                    <td><?php echo $receta->fechaSolicitud ?></td>
+                                    <td><?php echo $receta->detalleMedicacion ?></td>
+                                    <td><?php echo $receta->pacienteNombre . ' ' . $receta->pacienteApellido ?></td>
+                                    <td><?php echo $receta->citaMedicaId ?></td>
+                                    <td><?php echo $receta->nombreEspecialidad ?></td>
+                                    <td><a class="btn btn-transparent btn-sm" href="<?php echo URLROOT; ?>/consultas/historiaMedica/<?php echo $receta->idRecetaMedica ?>"><i class="fas fa-capsules fa-2x text-info"></i></a></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

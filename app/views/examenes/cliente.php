@@ -32,7 +32,7 @@
                                     <td><?php echo $examen->idCitaMedica ?></td>
                                     <td><?php echo $examen->nombreEspecialidad ?></td>
                                     <td><?php echo $examen->medicoNombre . ' ' . $examen->medicoApellido ?></td>
-                                    <td><a class="btn btn-transparent btn-sm" href="<?php echo URLROOT; ?>/consultas/historiaMedica/<?php echo $examen->idexamen ?>"><i class="fas fa-notes-medical fa-2x text-info"></i></a></td>
+                                    <td><a class="btn btn-transparent btn-sm" href="<?php echo URLROOT; ?>/consultas/historiaMedica/<?php echo $examen->idexamen ?>"><i class="fas fa-file-medical-alt fa-2x text-info"></i></a></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

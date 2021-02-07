@@ -45,6 +45,9 @@
         return false;
     }
 
-    
+    function randomString($totalCharacters){
+        $permitted_chars = "0987654321abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&/()=?_-:;,.<>";
+        return substr(str_shuffle($permitted_chars), 0, $totalCharacters);
+    }
 
 
