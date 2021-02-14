@@ -49,6 +49,7 @@
                     </div>
                     <hr class="hr-filter">
                 <!-- DIAGNOSTICO -->
+                <?php if(!checkLoggedUserRol("CLIENTE") || (checkLoggedUserRol("CLIENTE") && $data['citaMedica']->estado != 'AGENDADA')) : ?>
                     <div class="card-title">
                         <h5 class="m-0">Diagnóstico</h5>
                     </div>
@@ -56,14 +57,14 @@
                         <div class="col-md-9">
                             <div class="form-group">
                                 <label for="resumenDiagnostico" class="small">Resumen: <sup>*</sup></label>
-                                <input name="resumenDiagnostico" class="form-control <?php echo (!empty($data['resumenDiagnostico_error'])) ? 'is-invalid' : ''; ?>">
+                                <input name="resumenDiagnostico" <?php if($data['citaMedica']->estado != "AGENDADA"){echo 'disabled';} ?> class="form-control <?php echo (!empty($data['resumenDiagnostico_error'])) ? 'is-invalid' : ''; ?>" value="<?php echo trim($data['detalleDiagnostico']) ?>">
                                 <span class="invalid-feedback"><?php echo $data['resumenDiagnostico_error']; ?></span>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="fechaProximoControl" class="small">Próximo control:</label>
-                                <input type="date" name="fechaProximoControl" class="form-control <?php echo (!empty($data['fechaProximoControl_error'])) ? 'is-invalid' : ''; ?>">
+                                <input type="date" <?php if($data['citaMedica']->estado != "AGENDADA"){echo 'disabled';} ?> name="fechaProximoControl" class="form-control <?php echo (!empty($data['fechaProximoControl_error'])) ? 'is-invalid' : ''; ?>" value="<?php echo trim($data['fechaProximoControl']) ?>">
                             </div>
                         </div>
                     </div>
@@ -71,8 +72,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="detalleDiagnostico" class="small">Detalle: <sup>*</sup></label>
-                                <textarea type="text" name="detalleDiagnostico" class="form-control  <?php echo (!empty($data['detalleDiagnostico_error'])) ? 'is-invalid' : ''; ?>" rows="4">
-                                </textarea>
+                                <textarea type="text" <?php if($data['citaMedica']->estado != "AGENDADA"){echo 'disabled';} ?> name="detalleDiagnostico" class="form-control  <?php echo (!empty($data['detalleDiagnostico_error'])) ? 'is-invalid' : ''; ?>" rows="4"><?php echo trim($data['resumenDiagnostico']) ?></textarea>
                                 <span class="invalid-feedback"><?php echo $data['detalleDiagnostico_error']; ?></span>
                             </div>
                         </div>      
@@ -87,7 +87,7 @@
                                         <input type="text" name="recetasTotales" id="recetasTotales" class="text-center rounded-circle border-0 p-0 label-valor-totales" value="0" readonly>
                                         <input hidden type="text" id="recetasIdCounter" class="text-center rounded-circle border-0 p-0 label-valor-totales" value="0" readonly>
                                     </label>
-                                    <button type="button" class="btn nav-link text-light ml-auto" data-toggle="modal" data-target="#recetas-modal" aria-pressed="false" autocomplete="off">
+                                    <button type="button" <?php if($data['citaMedica']->estado != "AGENDADA"){echo 'disabled';} ?> class="btn nav-link text-light ml-auto" data-toggle="modal" data-target="#recetas-modal" aria-pressed="false" autocomplete="off">
                                         <div class="d-flex justify-content-right">
                                             <span class="mr-2" style="font-size:12px">Añadir</span>
                                             <i class="fas fa-plus-circle"></i>
@@ -117,7 +117,7 @@
                                         <input type="text" name="examenesTotales" id="examenesTotales" class="text-center rounded-circle border-0 p-0 label-valor-totales" value="0" readonly>
                                         <input hidden type="text" id="examenesIdCounter" class="text-center rounded-circle border-0 p-0 label-valor-totales" value="0" readonly>
                                     </label>
-                                    <button type="button" class="btn nav-link text-light ml-auto" data-toggle="modal" data-target="#examenes-modal" aria-pressed="false" autocomplete="off">
+                                    <button type="button" <?php if($data['citaMedica']->estado != "AGENDADA"){echo 'disabled';} ?> class="btn nav-link text-light ml-auto" data-toggle="modal" data-target="#examenes-modal" aria-pressed="false" autocomplete="off">
                                         <div class="d-flex justify-content-right">
                                             <span class="mr-2" style="font-size:12px">Añadir</span>
                                             <i class="fas fa-plus-circle"></i>
@@ -138,12 +138,15 @@
                                 </table>
                             </div>
                         </div>
-                    </div>                   
+                    </div>
+                    <?php if($data['citaMedica']->estado == "AGENDADA") : ?>                
                     <div class="row mt-3">
                         <div class="col-md-4 mx-auto">  
                             <input type="submit" value="Registrar diagnóstico" class="btn btn-block btn-success">
                         </div>
                     </div>
+                    <?php endif; ?>
+                <?php endif; ?>
                 </form>
             </div>
         </div>
@@ -227,6 +230,8 @@
 
     $(document).ready(function () {
         consultarExamenes();
+        consultarExamenesSolicitados();
+        consultarRecetasSolicitadas();
     });
 
     function agregarReceta(){
@@ -295,14 +300,48 @@
     }
 
     function consultarExamenes(){
-        $.get("<?php echo URLROOT . "/examenes/obtnenerExamenes" ?>")
-            .done(function (result){
+        $.get("<?php echo URLROOT . "/examenes/obtenerExamenes/" ?>")
+            .done(function (result){                
                 var examenes = $.parseJSON(result);
-                cargarCatalogoExamenes(examenes);
+                if(examenes != null){
+                    cargarCatalogoExamenes(examenes);
+                }
             })
             .catch(err => {
                 alert("Ha ocurrido un error durante la consulta del catálogo de exámenes")
             });
+    }
+
+    function consultarExamenesSolicitados(){
+        var citaMedicaId = "<?php echo $data['citaMedicaId']; ?>";
+        if(citaMedicaId != null){
+            $.get("<?php echo URLROOT . "/examenes/obtenerExamenesPorCitaMedica/"?>" + citaMedicaId)
+            .done(function (result){
+                var examenesSolicitados = $.parseJSON(result);
+                if(examenesSolicitados != null){
+                    cargarExamenesSolicitados(examenesSolicitados);
+                }
+            })
+            .catch(err => {
+                alert("Ha ocurrido un error durante la consulta del catálogo de exámenes")
+            });
+        }
+    }
+
+    function consultarRecetasSolicitadas(){
+        var citaMedicaId = "<?php echo $data['citaMedicaId']; ?>";
+        if(citaMedicaId != null){
+            $.get("<?php echo URLROOT . "/recetas/obtenerRecetasPorCitaMedica/"; ?>" + citaMedicaId)
+            .done(function (result){
+                var recetasSolicitadas = $.parseJSON(result);
+                if(recetasSolicitadas != null){
+                    cargarRecetasSolicitadas(recetasSolicitadas);
+                }
+            })
+            .catch(err => {
+                alert("Ha ocurrido un error durante la consulta del catálogo de exámenes")
+            });
+        }
     }
 
     function cargarCatalogoExamenes(examenes){
@@ -313,6 +352,39 @@
         });
 
         $("#examenDetalle").append(optionsExamenesHTML);
+    }
+
+    function cargarExamenesSolicitados(examenes){
+        var optionsExamenesHTML = '';
+
+        examenes.forEach(examenData => {            
+            optionsExamenesHTML += 
+                "<tr id=\"" + examenData.idExamen.toLowerCase() + "\">" + 
+                    "<td><input type=\"text\" id=\"id" + examenData.idExamen + "\" name=\"examenes[" + examenData.idExamen + "][id]\" value=\"" + examenData.idExamen + "\" hidden>" + examenData.idExamen + "</td>" +
+                    "<td><input type=\"text\" id=\"detalle" + examenData.idExamen + "\" name=\"examenes[" + examenData.idExamen + "][detalle]\" value=\"" + examenData.nombreExamen + "\" hidden>" + examenData.nombreExamen + "</td>" +
+                    "<td hidden><input type=\"text\" id=\"indicaciones" + examenData.idExamen + "\" name=\"examenes[" + examenData.idExamen + "][indicaciones]\" value=\"" + examenData.indicaciones + "\" hidden>" + examenData.indicaciones + "</td>" +
+                    "<td><button type=\"button\" class=\"btn-transparent border-0 p-0\" onclick=\"verExamen('" + examenData.idExamen.toLowerCase() + "')\"><i class=\"fas fa-eye text-info\"></i></button></td>" +
+                "</tr>";
+        });
+
+        $("#examenesMedicos").append(optionsExamenesHTML);
+        $("#examenesTotales").val(examenes.length);
+    }
+
+    function cargarRecetasSolicitadas(recetas){
+        var optionsExamenesHTML = '';
+        recetas.forEach(recetaData => {            
+            optionsExamenesHTML += 
+                "<tr id=\"" + recetaData.idRecetaMedica.toLowerCase() + "\">" + 
+                    "<td><input type=\"text\" id=\"id" + recetaData.idRecetaMedica + "\" name=\"recetas[" + recetaData.idRecetaMedica + "][id]\" value=\"" + recetaData.idRecetaMedica + "\" hidden>" + recetaData.idRecetaMedica + "</td>" +
+                    "<td><input type=\"text\" id=\"detalle" + recetaData.idRecetaMedica + "\" name=\"recetas[" + recetaData.idRecetaMedica + "][detalle]\" value=\"" + recetaData.detalleMedicacion + "\" hidden>" + recetaData.detalleMedicacion + "</td>" +
+                    "<td hidden><input type=\"text\" id=\"indicaciones" + recetaData.idRecetaMedica + "\" name=\"recetas[" + recetaData.idRecetaMedica + "][indicaciones]\" value=\"" + recetaData.indicaciones + "\" hidden>" + recetaData.indicaciones + "</td>" +
+                    "<td><button type=\"button\" class=\"btn-transparent border-0 p-0\" onclick=\"verReceta('" + recetaData.idRecetaMedica.toLowerCase() + "')\"><i class=\"fas fa-eye text-info\"></i></button></td>" +
+                "</tr>";
+        });
+
+        $("#recetasMedicas").append(optionsExamenesHTML);
+        $("#recetasTotales").val(recetas.length);
     }
 
     /* function resizeControl(input){

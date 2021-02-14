@@ -22,13 +22,13 @@
             ];
             $vista = 'index';
             
-        //check User Role -- Only ADMINISTRADOR allowed
+            //check User Role -- Only ADMINISTRADOR allowed
             if(checkLoggedUserRol("ADMINISTRADOR")){
                 $vista = "administrador";
                 $data['examenes'] = $this->examenModel->ObtenerExamenesSolicitados();
             }
 
-        //check User Role -- Only MEDICO allowed
+            //check User Role -- Only MEDICO allowed
             else if(checkLoggedUserRol("MEDICO")){
                 $vista = "medico";
                 $examenes = $this->examenModel->obtenerExamenesSolicitadosPorMedico($_SESSION['user_id']);
@@ -41,7 +41,7 @@
                 }
             }
 
-        //check User Role -- Only CLIENTE allowed
+            //check User Role -- Only CLIENTE allowed
             else if(checkLoggedUserRol("CLIENTE")){
                 $vista = 'cliente';
                 // Obligar a completar el perfil para continuar en la aplicación
@@ -70,7 +70,8 @@
             $this->view('examenes/' . $vista, $data);
         }
 
-        public function obtnenerExamenes(){
+        /* Obtener Catálogo de exámenes */
+        public function obtenerExamenes(){
 
             //check User is loggedIn
             if(!isLoggedIn()){
@@ -78,6 +79,19 @@
             }
 
             $result = $this->examenModel->obtenerExamenes();
+
+            echo json_encode($result);                
+        }
+
+        /* Obtener examenes solicitados por cita médica */
+        public function obtenerExamenesPorCitaMedica($citaMedicaId){
+
+            //check User is loggedIn
+            if(!isLoggedIn()){
+                redirect('usuarios/login');
+            }
+
+            $result = $this->examenModel->obtenerExamenesPorCitaMedica($citaMedicaId);
 
             echo json_encode($result);                
         }

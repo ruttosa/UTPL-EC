@@ -11,33 +11,52 @@
     <div class="col-md-12">
         <div class="card p-3 shadow bg-info text-light">
             <div class="card-title d-flex justify-content-center">
-                <h5 class="m-0">Especialidades</h5>
-                <a class="btn nav-link text-light ml-auto" data-toggle="modal" data-target="#especialidades-add">
-                    <i class="fas fa-plus-circle"></i>
-                    Añadir especialidad
+                <div>
+                    <h5 class="m-0">Especialidades</h5>
+                    <p class="m-0 pt-2">Aquí puedes gestionar todas las especialidades disponibles en el hospital.</p>
+                </div>
+                <a class="btn btn-success nav-link text-light mr-3 ml-auto p-2 d-inline-flex align-items-center" data-toggle="modal" data-target="#especialidades-add">
+                    <i class="fas fa-plus-circle fa-2x mr-2"></i>
+                    <div> Añadir especialidad</div>
                 </a>
             </div>
             <div class="card-body">
-                <table class="table table-striped bg-light text-center">
-                  <thead>
-                    <tr class="text-muted">
-                      <th>#</th>
-                      <th>Título</th>
-                      <th>Editar</th>
-                      <th>Eliminar</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php foreach($data['especialidades'] as $especialidad) : ?>
-                        <tr>
-                            <td><?php echo $especialidad->idEspecialidad ?></td>
-                            <td class="col"><?php echo $especialidad->nombreEspecialidad ?></td>
-                            <td><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#especialidades-edit" onclick="loadEspecialidadToEdit(<?php echo $especialidad->idEspecialidad ?>, '<?php echo $especialidad->nombreEspecialidad ?>')"><i class="fas fa-edit text-info"></i></button></td>
-                            <td><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#especialidades-delete" onclick="loadEspecialidadToDelete(<?php echo $especialidad->idEspecialidad ?>)"><i class="fas fa-trash text-danger"></i></button></td>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group m-0">
+                                <label for="busquedaEspecialidad">Búsqueda por especialidad:</label>                                        
+                                <div class="input-group">
+                                <input type="search" name="busquedaEspecialidad" id="busquedaEspecialidad" class="form-control" onsearch="filtrarCitasMedicas('nombreEspecialidad', this.value)"></input>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button" onclick="filtrarCitasMedicas('nombreEspecialidad', document.getElementById('busquedaEspecialidad').value)"><i class="fas fa-search"></button></i>
+                                    </div>
+                                </div>                                        
+                        </div>
+                    </div>
+                </div>
+                <hr class="hr-filter bg-light light px-3">
+                <div class="table-responsive rounded">
+                    <table class="table table-striped bg-light text-center" id="table_Especialidades">
+                    <thead class="thead-dark">
+                        <tr class="text-muted">
+                        <th>#</th>
+                        <th>Título</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
                         </tr>
-                    <?php endforeach; ?>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach($data['especialidades'] as $especialidad) : ?>
+                            <tr class="table-row-filter">
+                                <td class="align-middle" id="idEspecialidad"><?php echo $especialidad->idEspecialidad ?></td>
+                                <td class="align-middle" id="nombreEspecialidad"><?php echo $especialidad->nombreEspecialidad ?></td>
+                                <td class="align-middle" id="button"><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#especialidades-edit" onclick="loadEspecialidadToEdit(<?php echo $especialidad->idEspecialidad ?>, '<?php echo $especialidad->nombreEspecialidad ?>')"><i class="fas fa-edit text-info"></i></button></td>
+                                <td class="align-middle" id="button1"><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#especialidades-delete" onclick="loadEspecialidadToDelete(<?php echo $especialidad->idEspecialidad ?>)"><i class="fas fa-trash text-danger"></i></button></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -133,5 +152,56 @@
         $("#especialidadToEditId").val();
         $("#especialidadToEditNombre").val();
     }
+</script>
+
+<script>
+    var data = [];
+
+    $(document).ready(function () {
+        
+        // Carga de citas médicas en arreglo
+        var Rows = $(".table-row-filter").toArray();
+
+        Rows.forEach((row) => {
+
+            // Mapeo de objetos desde el DOM
+            item = {
+                "idEspecialidad": $(row).find("#idEspecialidad").text(),
+                "nombreEspecialidad": $(row).find("#nombreEspecialidad").text(),
+                "button": $(row).find("#button")[0],
+                "button1": $(row).find("#button1")[0]
+            }
+            data.push(item);
+        });
+    });
+
+    function filtrarCitasMedicas(filterName, filterValue){
+        if(filterValue != null){
+            dataFiltered = data.filter((item) => {
+                return item[filterName].toLowerCase().includes(filterValue.toLowerCase());
+            });
+            showFilterResult(dataFiltered);
+        }
+        else{
+            showFilterResult(data);
+        }
+    }
+
+    function showFilterResult(dataFiltered){
+        var filterResultHTML = "";
+        var resultTableBody = $("#table_Especialidades tbody");
+
+        dataFiltered.forEach(item => {
+            filterResultHTML += "<tr class=\"table-row-filter\">" + 
+                                    "<td class=\"align-middle\" id=\"idEspecialidad\">" + item.idEspecialidad + "</td>" +
+                                        "<td class=\"align-middle\" id=\"nombreEspecialidad\">" + item.nombreEspecialidad + "</td>" +
+                                        item.button.outerHTML +
+                                        item.button1.outerHTML +
+                                "</tr>";
+        });
+
+        resultTableBody.html(filterResultHTML);
+    }
+
 </script>
 <?php require APPROOT . '/views/inc/footer.php'; ?>

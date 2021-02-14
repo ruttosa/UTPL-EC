@@ -72,11 +72,16 @@
                       <i class="fas fa-hospital-user text-light fa-lg ml-2 mr-3"></i>Clientes
                     </a>
                   </li>
+                  <li class="nav-item">
+                    <a <?php if($_SESSION['cliente_sin_perfil']){echo 'onclick="javascript void(0);"';}else{ echo 'href="' . URLROOT . '/pacientes"';}?> class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link <?php if(startsWith($_SESSION['activePage'],'pacientes')){echo 'current';}?> <?php if($_SESSION['cliente_sin_perfil']){echo 'disabled-link';} ?> <?php if(startsWith($_SESSION['activePage'],'pacientes')){echo 'current';}?>" >
+                      <i class="fas fa-user-injured text-light fa-lg ml-2 mr-3"></i>Pacientes
+                    </a>
+                  </li> 
                 <?php endif; ?>
                 <?php if(checkLoggedUserRol('CLIENTE')) : ?>
                   <li class="nav-item">
                     <a <?php if($_SESSION['cliente_sin_perfil']){echo 'onclick="javascript void(0);"';}else{ echo 'href="' . URLROOT . '/pacientes"';}?> class="nav-link text-white p-1 mb-2 d-flex align-items-center sidebar-link <?php if(startsWith($_SESSION['activePage'],'pacientes')){echo 'current';}?> <?php if($_SESSION['cliente_sin_perfil']){echo 'disabled-link';} ?> <?php if(startsWith($_SESSION['activePage'],'pacientes')){echo 'current';}?>" >
-                      <i class="fas fa-hospital-user text-light fa-lg ml-2 mr-3"></i>Pacientes
+                      <i class="fas fa-user-injured text-light fa-lg ml-2 mr-3"></i>Pacientes
                     </a>
                   </li>
                   <li class="nav-item">

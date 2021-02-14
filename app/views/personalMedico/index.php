@@ -10,15 +10,43 @@
     <div class="col-md-12">
         <div class="card p-3 shadow bg-info text-light">
             <div class="card-title d-flex justify-content-center align-items-center">
+                <div>
                 <h5 class="m-0">Personal médico</h5>
-                <a class="btn nav-link text-light ml-auto" href="<?php echo URLROOT; ?>/personalMedico/agregar">
-                    <i class="fas fa-plus-circle"></i>
-                    Añadir médico
+                    <p class="m-0 pt-2">Aquí puedes visualizar todo el personal médico del hospital.</p>
+                </div>                
+                <a class="btn btn-success nav-link text-light mr-3 ml-auto p-2 d-inline-flex align-items-center" href="<?php echo URLROOT; ?>/personalMedico/agregar">
+                    <i class="fas fa-plus-circle fa-2x mr-2"></i>
+                    <div>Añadir médico</div>
                 </a>
             </div>
             <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group m-0">
+                                <label for="busquedaEspecialidad">Búsqueda por especialidad:</label>                                        
+                                <div class="input-group">
+                                <input type="search" name="busquedaEspecialidad" id="busquedaEspecialidad" class="form-control" onsearch="filtrarCitasMedicas('especialidad', this.value)"></input>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button" onclick="filtrarCitasMedicas('especialidad', document.getElementById('busquedaEspecialidad').value)"><i class="fas fa-search"></button></i>
+                                    </div>
+                                </div>                                        
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group m-0">
+                                <label for="busquedaMedico">Búsqueda por medico:</label>                                        
+                                <div class="input-group">
+                                <input type="search" name="busquedaMedico" id="busquedaMedico" class="form-control" onsearch="filtrarCitasMedicas('medico', this.value)"></input>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button" onclick="filtrarCitasMedicas('medico', document.getElementById('busquedaMedico').value)"><i class="fas fa-search"></button></i>
+                                    </div>
+                                </div>                                        
+                        </div>
+                    </div>
+                </div>
+                <hr class="hr-filter bg-light light px-3">
                 <div class="table-responsive rounded">
-                    <table class="table rounded table-striped bg-light text-center">
+                    <table class="table rounded table-striped bg-light text-center" id="table_Medicos">
                         <thead class="thead-dark">
                             <tr class="text-muted">
                                 <th>#</th>
@@ -33,21 +61,21 @@
                         </thead>
                         <tbody>
                             <?php foreach($data as $medico) : ?>
-                                <tr>
-                                    <td class="align-middle"><?php echo $medico['perfil']->idUsuario ?></td>
-                                    <td class="align-middle"><?php echo $medico['perfil']->NombreCompleto . ' ' . $medico['perfil']->apellidoCompleto ?></td>
-                                    <td class="align-middle">
-                                        <ul class="list-unstyled m-0">
+                                <tr class="table-row-filter">
+                                    <td class="align-middle" id="idUsuario"><?php echo $medico['perfil']->idUsuario ?></td>
+                                    <td class="align-middle" id="medico"><?php echo $medico['perfil']->NombreCompleto . ' ' . $medico['perfil']->apellidoCompleto ?></td>
+                                    <td class="align-middle" id="especialidad">
+                                        <ul class="list-unstyled m-0" style="max-height:75px; overflow:auto;">
                                             <?php foreach($medico['especialidades'] as $especialidad) : ?> 
-                                                <li><?php echo $especialidad->nombreEspecialidad ?></li>
+                                                <li style="border-bottom: 1px solid grey"><?php echo $especialidad->nombreEspecialidad ?></li>
                                             <?php endforeach; ?>
                                         </ul>
                                     </td>
-                                    <td class="align-middle"><?php echo $medico['perfil']->correo ?></td>
-                                    <td class="align-middle"><?php echo $medico['perfil']->telefono ?></td>
-                                    <td class="align-middle"><a class="btn btn-dark btn-sm" href="<?php echo URLROOT; ?>/personalMedico/editar/<?php echo $medico['perfil']->idUsuario ?>"><i class="fas fa-edit text-info"></i></a></td>
-                                    <td class="align-middle"><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#personalMedico-password" data-id="<?php echo $medico['perfil']->idUsuario ?>"><i class="fas fa-key text-warning"></i></button></td>
-                                    <td class="align-middle"><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#personalMedico-delete" data-id="<?php echo $medico['perfil']->idUsuario ?>"><i class="fas fa-trash text-danger"></i></button></td>
+                                    <td class="align-middle" id="correo"><?php echo $medico['perfil']->correo ?></td>
+                                    <td class="align-middle" id="telefono"><?php echo $medico['perfil']->telefono ?></td>
+                                    <td class="align-middle" id="button"><a class="btn btn-dark btn-sm" href="<?php echo URLROOT; ?>/personalMedico/editar/<?php echo $medico['perfil']->idUsuario ?>"><i class="fas fa-edit text-info"></i></a></td>
+                                    <td class="align-middle" id="button1"><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#personalMedico-password" data-id="<?php echo $medico['perfil']->idUsuario ?>"><i class="fas fa-key text-warning"></i></button></td>
+                                    <td class="align-middle" id="button2"><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#personalMedico-delete" data-id="<?php echo $medico['perfil']->idUsuario ?>"><i class="fas fa-trash text-danger"></i></button></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -101,10 +129,11 @@
 </div>
 <!-- end of Cambiar contraseña modal form -->
 
+<!-- Script reseteo contraseña -->
 <script>
 
-// Carga datos modal eliminar
-$('#personalMedico-delete').on('show.bs.modal', function (event) {
+    // Carga datos modal eliminar
+    $('#personalMedico-delete').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget); // Button that triggered the modal
         var recipient = button.data('id'); // Extract info from data-* attributes
 
@@ -159,6 +188,66 @@ $('#personalMedico-delete').on('show.bs.modal', function (event) {
         $('#reset-result').hide();
     }
     
+</script>
+
+<!-- Script búsqueda -->
+<script>
+    var data = [];
+
+    $(document).ready(function () {
+        
+        // Carga de citas médicas en arreglo
+        var Rows = $(".table-row-filter").toArray();
+
+        Rows.forEach((row) => {
+
+            // Mapeo de objetos desde el DOM
+            item = {
+                "idUsuario": $(row).find("#idUsuario").text(),
+                "medico": $(row).find("#medico").text(),
+                "especialidad": $(row).find("#especialidad").html(),
+                "correo": $(row).find("#correo").text(),
+                "telefono": $(row).find("#telefono").text(),
+                "button": $(row).find("#button")[0],
+                "button1": $(row).find("#button1")[0],
+                "button2": $(row).find("#button2")[0]
+            }
+            data.push(item);
+        });
+    });
+
+    function filtrarCitasMedicas(filterName, filterValue){
+        if(filterValue != null){
+            dataFiltered = data.filter((item) => {
+                return item[filterName].toLowerCase().includes(filterValue.toLowerCase());
+            });
+            showFilterResult(dataFiltered);
+        }
+        else{
+            showFilterResult(data);
+        }
+    }
+
+    function showFilterResult(dataFiltered){
+        var filterResultHTML = "";
+        var resultTableBody = $("#table_Medicos tbody");
+
+        dataFiltered.forEach(item => {
+            filterResultHTML += "<tr class=\"table-row-filter\">" + 
+                                    "<td class=\"align-middle\" id=\"idUsuario\">" + item.idUsuario + "</td>" +
+                                    "<td class=\"align-middle\" id=\"medico\">" + item.medico + "</td>" +
+                                    "<td class=\"align-middle\" id=\"especialidad\">" + item.especialidad + "</td>" +
+                                    "<td class=\"align-middle\" id=\"correo\">" + item.correo + "</td>" +
+                                    "<td class=\"align-middle\" id=\"telefono\">" + item.telefono + "</td>" +
+                                    item.button.outerHTML +
+                                    item.button1.outerHTML +
+                                    item.button2.outerHTML +
+                                "</tr>";
+        });
+
+        resultTableBody.html(filterResultHTML);
+    }
+
 </script>
 
 <?php require APPROOT . '/views/inc/footer.php'; ?>

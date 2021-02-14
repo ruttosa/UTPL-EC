@@ -92,4 +92,21 @@
             }
         }
 
+        /* Obtener recetas solicitadas por cita médica */
+        public function obtenerRecetaPorCitaMedica($citaMedicaId){
+            $this->db->query('SELECT r.*
+                                FROM recetamedica r
+                                WHERE r.citaMedicaId = :citaMedicaId
+                                ORDER BY r.idRecetaMedica ASC');
+            $this->db->bind(":citaMedicaId", $citaMedicaId);
+
+            $rows = $this->db->resultSet();
+            if($this->db->rowCount() > 0){
+                return $rows;
+            }
+            else{
+                return null;
+            }
+        }
+
     }

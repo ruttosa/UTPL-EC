@@ -67,5 +67,18 @@
              
             $this->view('recetas/' . $vista, $data);
         }
+
+        /* Obtener recetas solicitadas por cita médica */
+        public function obtenerRecetasPorCitaMedica($citaMedicaId){
+
+            //check User is loggedIn
+            if(!isLoggedIn()){
+                redirect('usuarios/login');
+            }
+
+            $result = $this->recetaModel->obtenerRecetaPorCitaMedica($citaMedicaId);
+
+            echo json_encode($result);                
+        }
         
     }

@@ -15,33 +15,51 @@
                             <h5 class="m-0">Citas médicas solicitadas</h5>
                             <p class="m-0 pt-2">Aquí puedes visualizar todas las citas medicas solicitadas para tus pacientes.</p>
                         </div>
-                        <a class="btn nav-link text-light ml-auto pt-0" disabled='disabled' href="<?php echo URLROOT; ?>/consultas/agendar">
-                            <i class="fas fa-plus-circle"></i>
-                            Solicitar una cita médica
+                        <a class="btn btn-success nav-link text-light mr-3 ml-auto p-2 d-inline-flex align-items-center" href="<?php echo URLROOT; ?>/consultas/agendar">
+                            <i class="fas fa-plus-circle fa-2x mr-2"></i>
+                            <div>Solicitar una cita médica</div>
                         </a>
                     </div>
                     <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group m-0">
+                                        <label for="busquedaPaciente">Búsqueda por paciente:</label>                                        
+                                        <div class="input-group">
+                                        <input type="search" name="busquedaPaciente" id="busquedaPaciente" class="form-control" onsearch="filtrarCitasMedicas('paciente', this.value)"></input>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-primary" type="button" onclick="filtrarCitasMedicas('paciente', document.getElementById('busquedaPaciente').value)"><i class="fas fa-search"></button></i>
+                                            </div>
+                                        </div>                                        
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="hr-filter bg-light light px-3">
                         <div class="table-responsive rounded">
-                            <table class="table rounded table-striped bg-light text-center">
+                            <table class="table rounded table-striped bg-light text-center" id="table_CitasMedicas">
                                 <thead class="thead-dark">
                                     <tr class="text-muted">
                                         <th>#</th>
                                         <th>Fecha</th>
                                         <th>Paciente</th>
+                                        <th>Especialidad</th>
                                         <th>Médico</th>
                                         <th>Motivo</th>
+                                        <th>Estado</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach($data['citasMedicas'] as $citaMedica) : ?>
-                                        <tr>
-                                            <td class="align-middle"><?php echo $citaMedica->idCitaMedica ?></td>
-                                            <td class="align-middle"><?php echo $citaMedica->fechaSolicitud ?></td>
-                                            <td class="align-middle"><?php echo $citaMedica->pacienteNombre . ' ' . $citaMedica->pacienteApellido ?></td>
-                                            <td class="align-middle"><?php echo $citaMedica->medicoNombre . ' ' . $citaMedica->medicoApellido ?></td>
-                                            <td class="align-middle"><?php echo $citaMedica->motivo ?></td>
-                                            <td class="align-middle"><a class="btn btn-transparent btn-sm" href="<?php echo URLROOT; ?>/dashboard/cancelar/<?php echo $citaMedica->idCitaMedica ?>"><i class="fas fa-eye fa-2x text-info"></i></a></td>
+                                        <tr class="table-row-filter">
+                                            <td class="align-middle" id="idCitaMedica"><?php echo $citaMedica->idCitaMedica ?></td>
+                                            <td class="align-middle" id="fechaSolicitud"><?php echo date_format(date_create($citaMedica->fechaSolicitud), "d/m/Y") ?></td>
+                                            <td class="align-middle" id="paciente"><?php echo $citaMedica->pacienteNombre . ' ' . $citaMedica->pacienteApellido ?></td>
+                                            <td class="align-middle" id="especialidad"><?php echo $citaMedica->especialidad ?></td>
+                                            <td class="align-middle" id="medico"><?php echo $citaMedica->medicoNombre . ' ' . $citaMedica->medicoApellido ?></td>
+                                            <td class="align-middle" id="motivo"><?php echo $citaMedica->motivo ?></td>
+                                            <td class="align-middle" id="estado"><?php echo $citaMedica->estado ?></td>
+                                            <td class="align-middle" id="button"><a class="btn btn-transparent btn-sm" href="<?php echo URLROOT; ?>/consultas/historiaMedica/<?php echo $citaMedica->idCitaMedica ?>"><i class="fas fa-notes-medical fa-2x text-info"></i></a></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -53,5 +71,67 @@
         </div>
     </div>
 </div>
+
+<script>
+    var data = [];
+
+    $(document).ready(function () {
+        
+        // Carga de citas médicas en arreglo
+        var Rows = $(".table-row-filter").toArray();
+
+        Rows.forEach((row) => {
+
+            // Mapeo de objetos desde el DOM
+            item = {
+                "idCitaMedica": $(row).find("#idCitaMedica").text(),
+                "fechaSolicitud": $(row).find("#fechaSolicitud").text(),
+                "paciente": $(row).find("#paciente").text(),
+                "especialidad": $(row).find("#especialidad").text(),
+                "medico": $(row).find("#medico").text(),
+                "motivo": $(row).find("#motivo").text(),
+                "estado": $(row).find("#estado").text(),
+                "button": $(row).find("#button")[0]
+            }
+            data.push(item);
+        });
+
+        filtrarCitasMedicas('estado', 'AGENDADA');
+        
+    });
+
+    function filtrarCitasMedicas(filterName, filterValue){
+        if(filterValue != null){
+            dataFiltered = data.filter((item) => {
+                return item[filterName].toLowerCase().includes(filterValue.toLowerCase());
+            });
+            showFilterResult(dataFiltered);
+        }
+        else{
+            showFilterResult(data);
+        }
+    }
+
+    function showFilterResult(dataFiltered){
+        var filterResultHTML = "";
+        var resultTableBody = $("#table_CitasMedicas tbody");
+
+        dataFiltered.forEach(item => {
+            filterResultHTML += "<tr class=\"table-row-filter\">" + 
+                                    "<td class=\"align-middle\" id=\"idCitaMedica\">" + item.idCitaMedica + "</td>" +
+                                        "<td class=\"align-middle\" id=\"fechaSolicitud\">" + item.fechaSolicitud + "</td>" +
+                                        "<td class=\"align-middle\" id=\"paciente\">" + item.paciente + "</td>" +
+                                        "<td class=\"align-middle\" id=\"especialidad\">" + item.especialidad + "</td>" +
+                                        "<td class=\"align-middle\" id=\"medico\">" + item.medico + "</td>" +
+                                        "<td class=\"align-middle\" id=\"motivo\">" + item.motivo + "</td>" +
+                                        "<td class=\"align-middle\" id=\"estado\">" + item.estado + "</td>" +
+                                        item.button.outerHTML +
+                                "</tr>";
+        });
+
+        resultTableBody.html(filterResultHTML);
+    }
+
+</script>
 
 <?php require APPROOT . '/views/inc/footer.php'; ?>

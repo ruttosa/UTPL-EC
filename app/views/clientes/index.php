@@ -11,15 +11,32 @@
     <div class="col-md-12">
         <div class="card p-3 shadow bg-info text-light">
             <div class="card-title d-flex justify-content-center align-items-center">
-                <h5 class="m-0">Clientes</h5>
-                <a class="btn nav-link text-light ml-auto" href="<?php echo URLROOT; ?>/clientes/agregar">
-                    <i class="fas fa-plus-circle"></i>
-                    Añadir cliente
+                <div>
+                    <h5 class="m-0">Clientes</h5>
+                    <p class="m-0 pt-2">Aquí puedes visualizar todas las clientes del hospital.</p>
+                </div>
+                <a class="btn btn-success nav-link text-light mr-3 ml-auto p-2 d-inline-flex align-items-center" href="<?php echo URLROOT; ?>/clientes/agregar">
+                    <i class="fas fa-plus-circle fa-2x mr-2"></i>
+                    <div>Añadir cliente</div>
                 </a>
             </div>
             <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group m-0">
+                                <label for="busquedaCliente">Búsqueda por cliente:</label>                                        
+                                <div class="input-group">
+                                <input type="search" name="busquedaCliente" id="busquedaCliente" class="form-control" onsearch="filtrarCitasMedicas('cliente', this.value)"></input>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button" onclick="filtrarCitasMedicas('cliente', document.getElementById('busquedaCliente').value)"><i class="fas fa-search"></button></i>
+                                    </div>
+                                </div>                                        
+                        </div>
+                    </div>
+                </div>
+                <hr class="hr-filter bg-light light px-3">
                 <div class="table-responsive rounded">
-                    <table class="table rounded table-striped bg-light text-center shadow">
+                    <table class="table rounded table-striped bg-light text-center shadow"  id="table_Clientes">
                         <thead class="thead-dark">
                             <tr class="text-muted">
                                 <th>#</th>
@@ -33,14 +50,14 @@
                         </thead>
                         <tbody>
                             <?php foreach($data as $cliente) : ?>
-                                <tr>
-                                    <td class="align-middle"><?php echo $cliente->idPerfilPersona ?></td>
-                                    <td class="align-middle"><?php echo $cliente->nombreCompleto . ' ' . $cliente->apellidoCompleto ?></td>
-                                    <td class="align-middle"><?php echo $cliente->correo ?></td>
-                                    <td class="align-middle"><?php echo $cliente->telefono ?></td>
-                                    <td class="align-middle"><a class="btn btn-dark btn-sm" href="<?php echo URLROOT; ?>/clientes/perfil/<?php echo $cliente->idUsuario ?>"><i class="fas fa-edit text-info"></i></a></td>
-                                    <td class="align-middle"><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#cliente-password" data-id="<?php echo $cliente->idUsuario ?>"><i class="fas fa-key text-warning"></i></button></td>
-                                    <td class="align-middle"><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#cliente-delete" data-id="@<?php echo $cliente->idUsuario ?>"><i class="fas fa-trash text-danger"></i></button></td>
+                                <tr class="table-row-filter">
+                                    <td class="align-middle" id="idPerfilPersona"><?php echo $cliente->idPerfilPersona ?></td>
+                                    <td class="align-middle" id="cliente"><?php echo $cliente->nombreCompleto . ' ' . $cliente->apellidoCompleto ?></td>
+                                    <td class="align-middle" id="correo"><?php echo $cliente->correo ?></td>
+                                    <td class="align-middle" id="telefono"><?php echo $cliente->telefono ?></td>
+                                    <td class="align-middle" id="button"><a class="btn btn-dark btn-sm" href="<?php echo URLROOT; ?>/clientes/perfil/<?php echo $cliente->idUsuario ?>"><i class="fas fa-edit text-info"></i></a></td>
+                                    <td class="align-middle" id="button1"><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#cliente-password" data-id="<?php echo $cliente->idUsuario ?>"><i class="fas fa-key text-warning"></i></button></td>
+                                    <td class="align-middle" id="button2"><button class="btn btn-dark btn-sm" data-toggle="modal" data-target="#cliente-delete" data-id="@<?php echo $cliente->idUsuario ?>"><i class="fas fa-trash text-danger"></i></button></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -101,9 +118,10 @@
 </div>
 <!-- end of Cambiar contraseña modal form -->
 
+<!-- Script Reseteo de Contraseña -->
 <script>
-// Carga datos modal eliminar
-$('#personalMedico-delete').on('show.bs.modal', function (event) {
+    // Carga datos modal eliminar
+    $('#personalMedico-delete').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget); // Button that triggered the modal
         var recipient = button.data('id'); // Extract info from data-* attributes
 
@@ -157,6 +175,64 @@ $('#personalMedico-delete').on('show.bs.modal', function (event) {
         $('#reset-info').show();
         $('#reset-result').hide();
     }
+</script>
+
+<!-- Script de búsqueda -->
+<script>
+    var data = [];
+
+    $(document).ready(function () {
+        
+        // Carga de citas médicas en arreglo
+        var Rows = $(".table-row-filter").toArray();
+
+        Rows.forEach((row) => {
+
+            // Mapeo de objetos desde el DOM
+            item = {
+                "idPerfilPersona": $(row).find("#idPerfilPersona").text(),
+                "cliente": $(row).find("#cliente").text(),
+                "correo": $(row).find("#correo").text(),
+                "telefono": $(row).find("#telefono").text(),
+                "button": $(row).find("#button")[0],
+                "button1": $(row).find("#button1")[0],
+                "button2": $(row).find("#button2")[0]
+            }
+            data.push(item);
+        });
+    });
+
+    function filtrarCitasMedicas(filterName, filterValue){
+        if(filterValue != null){
+            dataFiltered = data.filter((item) => {
+                return item[filterName].toLowerCase().includes(filterValue.toLowerCase());
+            });
+            showFilterResult(dataFiltered);
+        }
+        else{
+            showFilterResult(data);
+        }
+    }
+
+    function showFilterResult(dataFiltered){
+        var filterResultHTML = "";
+        var resultTableBody = $("#table_Clientes tbody");
+
+        dataFiltered.forEach(item => {
+            filterResultHTML += "<tr class=\"table-row-filter\">" + 
+                                    "<td class=\"align-middle\" id=\"idPerfilPersona\">" + item.idPerfilPersona + "</td>" +
+                                        "<td class=\"align-middle\" id=\"cliente\">" + item.cliente + "</td>" +
+                                        "<td class=\"align-middle\" id=\"correo\">" + item.correo + "</td>" +
+                                        "<td class=\"align-middle\" id=\"telefono\">" + item.telefono + "</td>" +
+                                        item.button.outerHTML +
+                                        item.button1.outerHTML +
+                                        item.button2.outerHTML +
+                                "</tr>";
+        });
+
+        resultTableBody.html(filterResultHTML);
+    }
+
 </script>
 
 <?php require APPROOT . '/views/inc/footer.php'; ?>

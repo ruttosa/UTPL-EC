@@ -214,7 +214,6 @@
 
                     // Hash Password
                     $password = $data['password'];
-                    $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
 
                     $nuevoClienteId = $this->userModel->crearUsuario($data);
 

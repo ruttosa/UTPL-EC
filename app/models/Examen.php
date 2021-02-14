@@ -103,4 +103,21 @@
             }
         }
 
+        /* Obtener exámenes solicitados por cita médica */
+        public function obtenerExamenesPorCitaMedica($citaMedicaId){
+            $this->db->query('SELECT e.idExamen, e.nombreExamen, se.indicaciones
+                                FROM examen e
+                                    JOIN solicitudexamen se ON se.examenId = e.idExamen
+                                WHERE se.citaMedicaId = :citaMedicaId
+                                ORDER BY e.nombreExamen ASC');
+            $this->db->bind(":citaMedicaId", $citaMedicaId);
+
+            $rows = $this->db->resultSet();
+            if($this->db->rowCount() > 0){
+                return $rows;
+            }
+            else{
+                return null;
+            }
+        }
     }

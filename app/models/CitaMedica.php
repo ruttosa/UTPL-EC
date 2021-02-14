@@ -51,7 +51,7 @@
                                     JOIN especialidad e ON e.idEspecialidad = cm.especialidadId
                                     JOIN horarioatencion h ON h.idHorarioAtencion = cm.horarioAtencionId                                    
                                 WHERE cm.pacienteId = :pacienteId
-                                ORDER BY cm.fechaSolicitud DESC");
+                                ORDER BY cm.estado ASC, cm.fechaSolicitud ASC");
             $this->db->bind(":pacienteId", $pacienteId);
 
             return $this->db->resultSet();
@@ -77,7 +77,7 @@
                                     JOIN especialidad e ON e.idEspecialidad = cm.especialidadId
                                     JOIN horarioatencion h ON h.idHorarioAtencion = cm.horarioAtencionId                                    
                                 WHERE cm.medicoId = :medicoId
-                                ORDER BY cm.fechaSolicitud DESC");
+                                ORDER BY cm.estado ASC, cm.fechaSolicitud ASC");
             $this->db->bind(":medicoId", $medicoId);
 
             return $this->db->resultSet();
@@ -118,7 +118,8 @@
 
         // Cancelar Cita Médica --> Actualiza el campo Estado a "CANCELADA"
         public function cancelarCitaMedica($citaMedicaId){
-            $this->db->query("UPDATE citamedica SET estado = 'CANCELADA' WHERE idCitaMedica = :citaMedicaId");
+            //$this->db->query("UPDATE citamedica SET estado = 'CANCELADA' WHERE idCitaMedica = :citaMedicaId");
+            $this->db->query("DELETE FROM citamedica WHERE idCitaMedica = :citaMedicaId");
             $this->db->bind(':citaMedicaId', $citaMedicaId);
             if($this->db->execute()){
                 return true;

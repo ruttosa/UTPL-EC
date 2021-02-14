@@ -16,7 +16,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="especialidad">Especialidad: <sup>*</sup></label>
-                                <select name="especialidad" id="especialidad" class="form-control form-control-lg <?php echo (!empty($data['especialidad_error'])) ? 'is-invalid' : ''; ?>">
+                                <select name="especialidad" id="especialidad" onchange="consultarMedicosDisponibles()" class="form-control form-control-lg <?php echo (!empty($data['especialidad_error'])) ? 'is-invalid' : ''; ?>">
                                     <option value=""></option>
                                     <?php foreach($data['especialidades'] as $especialidad) : ?>
                                         <option value="<?php echo $especialidad->idEspecialidad ?>" <?php if($data['especialidad'] == $especialidad->idEspecialidad){echo 'selected';} ?>><?php echo $especialidad->nombreEspecialidad ?></option>
@@ -121,17 +121,19 @@
         var especialidad = $('#especialidad').val();
         var fechaCitaMedica = $('#fechaCitaMedica').val();
         
-        // Consulta Ajax de Médicos disponibles
-        var data = {
-            "especialidad": especialidad,
-            "fechaCitaMedica": fechaCitaMedica
+        if(especialidad && fechaCitaMedica){
+            // Consulta Ajax de Médicos disponibles
+            var data = {
+                "especialidad": especialidad,
+                "fechaCitaMedica": fechaCitaMedica
+            }
+            
+            $.post("<?php echo URLROOT . "/consultas/consultaDisponibilidad" ?>", data)
+                .done(function (result){
+                    var medicosDisponibles = $.parseJSON(result);
+                    showMedicosDisponiblidadResult(medicosDisponibles);
+                });
         }
-        
-        $.post("<?php echo URLROOT . "/consultas/consultaDisponibilidad" ?>", data)
-            .done(function (result){
-                var medicosDisponibles = $.parseJSON(result);
-                showMedicosDisponiblidadResult(medicosDisponibles);
-            });
         
     }
 

@@ -99,8 +99,7 @@
                     else{
 
                         // Hash Generic Password
-                        $generic_Password = 'Medico2021';
-                        $pass = password_hash($generic_Password, PASSWORD_DEFAULT);
+                        $pass = 'Medico2021';
 
                         $userData = [
                             'nombreUsuario' => explode('@', $data['correo'])[0],
@@ -146,7 +145,7 @@
                         return $this->view('personalMedico/agregar', $data);
                     }
                     
-                    flash('agregarMedico_success', 'El registro del médico finalizó correctamente. Su contraseña actual es: ' . $generic_Password);                    
+                    flash('agregarMedico_success', 'El registro del médico finalizó correctamente. Su contraseña actual es: ' . $pass);                    
                     redirect('personalMedico/agregar');
                 }
                 else{

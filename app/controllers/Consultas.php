@@ -196,6 +196,7 @@
                                     $recetaDetalle = $receta['detalle'];
                                     $recetaIndicacion = $receta['indicaciones'];
                                     
+                                    /* Registrar receta */
                                     $recetaId = $this->recetaModel->registrarReceta($citaMedicaId, $recetaDetalle, $recetaIndicacion);
 
                                     if(!isset($recetaId)){
@@ -208,10 +209,10 @@
                             // Procesar examenes
                             if($_POST['examenesTotales'] > 0){
                                 $examenes = $_POST['examenes'];
-                                foreach ($examenes as $receta) {
-                                    $examenId = $receta['id'];
-                                    $examenDetalle = $receta['detalle'];
-                                    $examenIndicacion = $receta['indicaciones'];
+                                foreach ($examenes as $examen) {
+                                    $examenId = $examen['id'];
+                                    $examenDetalle = $examen['detalle'];
+                                    $examenIndicacion = $examen['indicaciones'];
 
                                     $examenId = $this->examenModel->solicitarExamen($citaMedicaId, $examenDetalle, $examenIndicacion);
 
@@ -247,17 +248,22 @@
             else{
                 $data = [
                     'citaMedicaId' => $citaMedicaId,
-                    'citaMedica' => null, 
+                    'citaMedica' => null,
                     'resumenDiagnostico' => '',
                     'resumenDiagnostico_error' => '',
                     'detalleDiagnostico' => '',
                     'detalleDiagnostico_error' => '' ,
-                    'fechaProximoControl' => ''     
+                    'fechaProximoControl' => '',
+                    'recetas' => null
                 ];
     
-                $citaMedica = $this->citaMedicaModel->obtenerCitaMedica($citaMedicaId);    
+                $citaMedica = $this->citaMedicaModel->obtenerCitaMedica($citaMedicaId); 
+
                 if(isset($citaMedica)){
                     $data['citaMedica'] = $citaMedica;
+                    $data['resumenDiagnostico'] = $citaMedica->diagnosticoResumen;
+                    $data['detalleDiagnostico'] = $citaMedica->diagnosticoDetalle;
+                    $data['fechaProximoControl'] = $citaMedica->fechaProximoControl;
                 }
     
                 // Obtener detalle de la cita médica

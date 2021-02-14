@@ -13,17 +13,35 @@
             if(!isLoggedIn()){
                 redirect('usuarios/login');
             }
-            //check User Role -- Only CLIENTE allowed
-            if(!checkLoggedUserRol("CLIENTE")){
+            //check User Role -- Only ADMINISTRADOR y CLIENTE allowed
+            if(checkLoggedUserRol("MEDICO")){
                 redirect('dashboard');
             }
             
-            $data = [];
+            $data = [
+                'usuario' => '',
+                'pacientes' => null
+            ];   
 
-            // Obtener pacientes del usuario actual
-            $pacientes = $this->pacienteModel->obtenerPacientesPorCliente($_SESSION['user_id']);
-            if(isset($pacientes)){
-                $data = $pacientes;
+            //check CLIENTE data
+            if(checkLoggedUserRol("CLIENTE")){
+                $data['usuario'] = 'CLIENTE';
+
+                // Obtener pacientes del usuario cliente actual
+                $pacientes = $this->pacienteModel->obtenerPacientesPorCliente($_SESSION['user_id']);
+                if(isset($pacientes)){
+                    $data['pacientes'] = $pacientes;
+                }
+            }
+
+            //check ADMINISTRADOR data
+            if(checkLoggedUserRol("ADMINISTRADOR")){
+
+                // Obtener pacientes todos los pacientes
+                $pacientes = $this->pacienteModel->obtenerPacientes();
+                if(isset($pacientes)){
+                    $data['pacientes'] = $pacientes;
+                }
             }
 
             return $this->view('pacientes/index', $data);
@@ -35,8 +53,8 @@
             if(!isLoggedIn()){
                 redirect('usuarios/login');
             }
-            //check User Role -- Only CLIENTE allowed
-            if(!checkLoggedUserRol("CLIENTE")){
+            //check User Role -- Only ADMINISTRADOR y CLIENTE allowed
+            if(checkLoggedUserRol("MEDICO")){
                 redirect('dashboard');
             }
 
@@ -139,8 +157,8 @@
             if(!isLoggedIn()){
                 redirect('usuarios/login');
             }
-            //check User Role -- Only CLIENTE allowed
-            if(!checkLoggedUserRol("CLIENTE")){
+            //check User Role -- Only ADMINISTRADOR y CLIENTE allowed
+            if(checkLoggedUserRol("MEDICO")){
                 redirect('dashboard');
             }
 
